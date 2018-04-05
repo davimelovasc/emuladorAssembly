@@ -151,7 +151,24 @@ public class CPU {
 
 	public void pegarNaRam(String endereco, int tamInstrucao) {
 		
+		switch(tam) {
+		case 16:
+			short en0 = Short.parseShort(endereco);
+			registradores16[4] = en0; //PI
+			barramento.send(Constantes.CPU, Constantes.RAM, new Dado(Constantes.KEY_LER, new byte[tamInstrucao], endereco));
+			break;
 
+		case 32:
+			int en1 = Integer.parseInt(endereco);
+			registradores32[4] = en1;
+			barramento.send(Constantes.CPU, Constantes.RAM, new Dado(Constantes.KEY_LER, new byte[tamInstrucao], endereco));
+			break;
+		case 64:
+			long en2 = Long.parseLong(endereco);
+			registradores64[4] = en2;
+			barramento.send(Constantes.CPU, Constantes.RAM, new Dado(Constantes.KEY_LER, new byte[tamInstrucao], endereco));
+			break;
+		}
 
 	}
 
