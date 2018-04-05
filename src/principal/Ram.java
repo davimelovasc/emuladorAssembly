@@ -38,7 +38,7 @@ public class Ram {
 		Dado d = barramento.reciveRam();
 		String controle = d.getControle();
 		byte[] dados = d.getDados();
-		int endereco = Helper.formatarEndereco(d.getEndereco());
+		int endereco = Integer.parseInt(d.getEndereco());
 		//validar endereco
 		
 		if(controle.equals(Constantes.KEY_ESCREVER)) {

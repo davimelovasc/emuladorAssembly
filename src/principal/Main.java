@@ -49,7 +49,6 @@ public class Main {
 		barramento.send(Constantes.MOD_ENTRADA_E_SAIDA, Constantes.CPU, new Dado(Constantes.KEY_INTERCEPTOR, new byte[tamInstrucao], Integer.toString(ponteiroBuffer)));
 		cpu.recive();
 		
-		cpu.pegarNaRam(Integer.toString(ponteiroBuffer), tamInstrucao);
 		byte[] res = ram.recive(); //se for leitura retorna dados lidos;
 		
 		

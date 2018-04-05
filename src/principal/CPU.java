@@ -1,8 +1,8 @@
 package principal;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import utils.Constantes;
 import utils.Validate;
@@ -149,55 +149,88 @@ public class CPU {
 
 	}
 
-	public void pegarNaRam(String endereco, int tamInstrucao) {
-		
-		switch(tam) {
-		case 16:
-			short en0 = Short.parseShort(endereco);
-			registradores16[4] = en0; //PI
-			barramento.send(Constantes.CPU, Constantes.RAM, new Dado(Constantes.KEY_LER, new byte[tamInstrucao], endereco));
-			break;
-
-		case 32:
-			int en1 = Integer.parseInt(endereco);
-			registradores32[4] = en1;
-			barramento.send(Constantes.CPU, Constantes.RAM, new Dado(Constantes.KEY_LER, new byte[tamInstrucao], endereco));
-			break;
-		case 64:
-			long en2 = Long.parseLong(endereco);
-			registradores64[4] = en2;
-			barramento.send(Constantes.CPU, Constantes.RAM, new Dado(Constantes.KEY_LER, new byte[tamInstrucao], endereco));
-			break;
-		}
-
-	}
 
 	public void recive() {
 		ArrayList<String> tokens = new ArrayList<>();
 		Dado d = barramento.reciveCPU();
 		byte[] dados = d.getDados();
+		byte[] acao = null;
+		byte[] op1 = null;
+		byte[] op2 = null;
+		byte[] op3 = null;
+		
 		
 		
 		if(d.getControle().equals(Constantes.RESPOSTA)) {
 			//DECODIFICAÇÃO
 			switch (Main.cpu.getTam()) {
 			case 16:
-				byte[] acao = Arrays.copyOfRange(dados, 0, 2);
-				byte[] op1 = Arrays.copyOfRange(dados, 2, 4);
-				byte[] op2 = null;
-				byte[] op3 = null;
+				short acao_short;
+				short op1_short;
+				short op2_short;
+				short op3_short;
+				
+				acao = Arrays.copyOfRange(dados, 0, 2);
+				op1 = Arrays.copyOfRange(dados, 2, 4);
+				op2 = null;
+				op3 = null;
 
-				if(dados.length > 6 && dados[5] != 0) {
+				if(dados.length > 5 && dados[5] != 0) {
 					op2  = Arrays.copyOfRange(dados, 4, 6);
 				}
 
-				if(dados.length > 8 && dados[7] != 0) {
+				if(dados.length > 7 && dados[7] != 0) {
 					op3 = Arrays.copyOfRange(dados, 6, 8);
 				}
 
-				int acao_int = fromTwoByteArray(acao);
+				acao_short = fromTwoByteArray(acao);
+				tokens.add(Constantes.getString(acao_short));
+				op1_short = fromTwoByteArray(op1);
+				if(Validate.isRegistrador(Integer.toString(op1_short))) {
+					tokens.add(Constantes.getString(op1_short));
+				} else {
+					tokens.add(Integer.toString(op1_short));
+				}
+
+
+				
+
+				if(op2 != null) {
+					op2_short = fromTwoByteArray(op2);
+					tokens.add(Integer.toString(op2_short));
+				}
+				if(op3 != null) {
+					op3_short = fromTwoByteArray(op3);
+					tokens.add(Integer.toString(op3_short));
+				}
+
+
+				executarInstrucao(tokens);
+				
+				break;
+			case 32:
+				
+				int acao_int;
+				int op1_int;
+				int op2_int;
+				int op3_int;
+				
+				dados = Arrays.copyOfRange(dados, 0, 4);
+				op1 = Arrays.copyOfRange(dados, 4, 8);
+				op2 = null;
+				op3 = null;
+
+				if(dados.length > 11 && dados[11] != 0) {
+					op2  = Arrays.copyOfRange(dados, 8, 12);
+				}
+
+				if(dados.length > 15 && dados[15] != 0) {
+					op3 = Arrays.copyOfRange(dados, 12, 16);
+				}
+
+				acao_int = fromFourByteArray(acao);
 				tokens.add(Constantes.getString(acao_int));
-				int op1_int = fromTwoByteArray(op1);
+				op1_int = fromFourByteArray(op1);
 				if(Validate.isRegistrador(Integer.toString(op1_int))) {
 					tokens.add(Constantes.getString(op1_int));
 				} else {
@@ -205,29 +238,57 @@ public class CPU {
 				}
 
 
-				int op2_int;
-				int op3_int;
-
 				if(op2 != null) {
-					op2_int = fromTwoByteArray(op2);
+					op2_int = fromFourByteArray(op2);
 					tokens.add(Integer.toString(op2_int));
 				}
 				if(op3 != null) {
-					op3_int = fromTwoByteArray(op3);
+					op3_int = fromFourByteArray(op3);
 					tokens.add(Integer.toString(op3_int));
 				}
 
 
-
 				executarInstrucao(tokens);
-				break;
-			case 32:
-
-
-				executarInstrucao(tokens);
+				
 				break;
 			case 64:
 
+				long acao_long;
+				long op1_long;
+				long op2_long;
+				long op3_long;
+				
+				dados = Arrays.copyOfRange(dados, 0, 8);
+				op1 = Arrays.copyOfRange(dados, 8, 16);
+				op2 = null;
+				op3 = null;
+
+				if(dados.length > 23 && dados[23] != 0) {
+					op2  = Arrays.copyOfRange(dados, 16, 24);
+				}
+
+				if(dados.length > 31 && dados[31] != 0) {
+					op3 = Arrays.copyOfRange(dados, 24, 32);
+				}
+
+				acao_long = fromEightByteArray(acao);
+				tokens.add(Constantes.getString(acao_long));
+				op1_long = fromEightByteArray(op1);
+				if(Validate.isRegistrador(Long.toString(op1_long))) {
+					tokens.add(Constantes.getString(op1_long));
+				} else {
+					tokens.add(Long.toString(op1_long));
+				}
+
+
+				if(op2 != null) {
+					op2_long = fromEightByteArray(op2);
+					tokens.add(Long.toString(op2_long));
+				}
+				if(op3 != null) {
+					op3_long = fromEightByteArray(op3);
+					tokens.add(Long.toString(op3_long));
+				}
 
 				executarInstrucao(tokens);
 				break;
@@ -238,7 +299,25 @@ public class CPU {
 			}
 		} else if(d.getControle().equals(Constantes.KEY_INTERCEPTOR)) {
 			
-			pegarNaRam(d.getEndereco(), d.getDados().length);
+			String endereco = d.getEndereco();
+			int tamInstrucao = d.getDados().length;
+			
+			switch(tam) {
+			case 16:
+				registradores16[4] = Short.parseShort(endereco); //PI
+				barramento.send(Constantes.CPU, Constantes.RAM, new Dado(Constantes.KEY_LER, new byte[tamInstrucao], endereco));
+				break;
+
+			case 32:
+				registradores32[4] = Integer.parseInt(endereco);
+				barramento.send(Constantes.CPU, Constantes.RAM, new Dado(Constantes.KEY_LER, new byte[tamInstrucao], endereco));
+				break;
+			case 64:
+				registradores64[4] = Long.parseLong(endereco);
+				barramento.send(Constantes.CPU, Constantes.RAM, new Dado(Constantes.KEY_LER, new byte[tamInstrucao], endereco));
+				break;
+			}
+
 			
 			
 		}
@@ -262,19 +341,24 @@ public class CPU {
 		this.barramento = barramento;
 	}
 
-	public static int fromTwoByteArray(byte[] bytes) {
-		return ((bytes[0] & 0xFF) << 8 | (bytes[1] & 0xFF));
-	}
-
-
-	public static int fromThreeByteArray(byte[] bytes) {
-		return (bytes[0] & 0xFF) << 16 | (bytes[1] & 0xFF) << 8 | (bytes[2] & 0xFF);
+	public static short fromTwoByteArray(byte[] bytes) {
+		ByteBuffer wrapped = ByteBuffer.wrap(bytes);
+		short num = wrapped.getShort();
+		return num;
 	}
 
 	public static int fromFourByteArray(byte[] bytes) {
-		return bytes[0] << 24 | (bytes[1] & 0xFF) << 16 | (bytes[2] & 0xFF) << 8 | (bytes[3] & 0xFF);
+		ByteBuffer wrapped = ByteBuffer.wrap(bytes); 
+		int num = wrapped.getInt();
+		return num;
+	}
+	
+	public static long fromEightByteArray(byte[] bytes) {
+		ByteBuffer wrapped = ByteBuffer.wrap(bytes); 
+		long num = wrapped.getLong();
+		return num;
 	}
 
-
+	
 
 }

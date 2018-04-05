@@ -9,11 +9,11 @@ public class Constantes {
 	public static final String CPU = "Cpu";
 	public static final String RESPOSTA = "Resposta";
 	
-	public static final int REGISTRADOR_A_INT = 100;
-	public static final int REGISTRADOR_B_INT = 101;
-	public static final int REGISTRADOR_C_INT = 102;
-	public static final int REGISTRADOR_D_INT = 103;
-	public static final int REGISTRADOR_PI_INT = 104;
+	public static final int REGISTRADOR_A_INT = -100;
+	public static final int REGISTRADOR_B_INT = -101;
+	public static final int REGISTRADOR_C_INT = -102;
+	public static final int REGISTRADOR_D_INT = -103;
+	public static final int REGISTRADOR_PI_INT = -104;
 	
 	public static final int MOV_INT = 50;
 	public static final int ADD_INT = 51;
@@ -32,8 +32,12 @@ public class Constantes {
 		Constantes.class.getField()
 	}*/
 	
-	public static String getString(int i) {
-		switch (i) {
+	public static String getString(long i) {
+		if (i > Integer.MAX_VALUE) {
+			return String.valueOf(i);
+		}
+		
+		switch ((int) i) {
 		case MOV_INT:
 			return "mov";
 		case ADD_INT:
