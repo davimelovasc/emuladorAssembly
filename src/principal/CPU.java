@@ -162,7 +162,9 @@ public class CPU {
 		
 		
 		if(d.getControle().equals(Constantes.RESPOSTA)) {
+			
 			//DECODIFICAÇÃO
+			
 			switch (Main.cpu.getTam()) {
 			case 16:
 				short acao_short;
