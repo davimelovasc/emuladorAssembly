@@ -25,24 +25,18 @@ public class ReadFile {
 		   /* ArrayList<String> instrucoes = new ArrayList<>();*/
 		  
 		   try {
-	        FileReader fileReader = new FileReader(fileName);
+	        FileReader fileReader = new FileReader("src/principal/"+fileName);
 	        BufferedReader bufferedReader = new BufferedReader(fileReader);
 	        
 	        
 	        while((line = bufferedReader.readLine()) != null) {
 	            line = line.trim();
+	            
+	           
+	            
 	            linhas.add(line);
 	           }
 	        
-	        /*int lineCount = 0;
-			for (String linha : entradas) {
-				
-				lineCount++;
-				
-				instrucoes.addAll(Parser.parse(linha, lineCount));
-				
-				return instrucoes;
-			}*/
 	            
 	        bufferedReader.close(); 
 	        
@@ -51,9 +45,11 @@ public class ReadFile {
 
 	        
 		   }catch(IOException ex) {
-	                         
+			   System.out.println(ex);
+			   Logger.printError(ReadFile.class.getName(), "Arquivo nao encontrado!");  
+			   
 	        }
-		   Logger.printError(ReadFile.class.getName(), "Arquivo nao encontrado!");
+		  
 		   
 		   return null;
 			

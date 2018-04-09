@@ -12,27 +12,27 @@ public class Encoder {
 	}
 
 	public static byte[] encode(ArrayList<String> instrucoes) {
-		
+
 		/*ByteBuffer c;
-		
+
 		if(Main.cpu.getTam() == 16) {
 			c = ByteBuffer.allocate(2);
-			
-			
-			
-			
+
+
+
+
 		}else if(Main.cpu.getTam() == 32) {
 			c = ByteBuffer.allocate(4);
-			
-			
+
+
 		}else if(Main.cpu.getTam() == 64) {
 			c = ByteBuffer.allocate(8);
-			
-			
+
+
 		}*/
-		
-		
-		byte[] resposta = new byte[Main.entradaESaida.getBuffer().length];
+
+
+		byte[] resposta = new byte[Main.cpu.getTam()/8];
 		byte[] respostaRed = null;
 		byte[] aux;
 		// ArrayList<Byte> b = new ArrayList<>();
@@ -47,12 +47,12 @@ public class Encoder {
 
 		}
 
-		if (instrucoes.get(3) != null) {
+		if (instrucoes.size() > 3) {
 			op3 = Constantes.getKey(instrucoes.get(3));
 
 		}
 
-		if (instrucoes.get(4) != null) {
+		if (instrucoes.size() > 4) {
 			op4 = Constantes.getKey(instrucoes.get(4));
 
 		}
@@ -63,91 +63,97 @@ public class Encoder {
 		case 16:
 
 			aux = toTwoByteArray(acao); // duvida: o array b so podera guardar informação por vez? pode criar um array
-										// pracada info?
-			Helper.saveAtoB(aux, resposta);
+			
+			resposta = aux;
 
 			aux = toTwoByteArray(op1);
-			Helper.saveAtoB(aux, resposta);
+			resposta = Helper.concatTwoArray(aux, resposta);
 
 			if (resposta.length >= 6 && op2 != 0) {
 				aux = toTwoByteArray(op2);
-				Helper.saveAtoB(aux, resposta);
+				resposta = Helper.concatTwoArray(aux, resposta);
 			}
 
 			if (resposta.length >= 8 && op3 != 0) {
 				aux = toTwoByteArray(op3);
-				Helper.saveAtoB(aux, resposta);
+				resposta = Helper.concatTwoArray(aux, resposta);
 			}
 
 			if (resposta.length >= 10 && op4 != 0) {
 				aux = toTwoByteArray(op4);
-				Helper.saveAtoB(aux, resposta);
+				resposta = Helper.concatTwoArray(aux, resposta);
 			}
-			
-			respostaRed = Helper.reductArray(resposta);
 
 			break;
 		case 32:
 			aux = toFourByteArray(acao);
-			Helper.saveAtoB(aux, resposta);
+			resposta = aux;
 
 			aux = toFourByteArray(op1);
-			Helper.saveAtoB(aux, resposta);
-
+			resposta = Helper.concatTwoArray(aux, resposta);
+			
+			
 			if (resposta.length >= 6 && op2 != 0) {
 				aux = toFourByteArray(op2);
-				Helper.saveAtoB(aux, resposta);
+				resposta = Helper.concatTwoArray(aux, resposta);
 			}
 
 			if (resposta.length >= 8 && op3 != 0) {
 				aux = toFourByteArray(op3);
-				Helper.saveAtoB(aux, resposta);
+				resposta = Helper.concatTwoArray(aux, resposta);
 			}
 
 			if (resposta.length >= 10 && op4 != 0) {
 				aux = toFourByteArray(op4);
-				Helper.saveAtoB(aux, resposta);
+				resposta = Helper.concatTwoArray(aux, resposta);
 			}
-			
-			 respostaRed = Helper.reductArray(resposta);
 
+			
 			break;
 
 
 		case 64:
-			aux = toEightByteArray(acao); // duvida: o array b so podera guardar informação por vez? pode criar um array
-			// pracada info?
-			Helper.saveAtoB(aux, resposta);
+			aux = toEightByteArray(acao);
+			
+			resposta = aux;
 
 			aux = toEightByteArray(op1);
-			Helper.saveAtoB(aux, resposta);
+			resposta = Helper.concatTwoArray(aux, resposta);
 
 			if (resposta.length >= 6 && op2 != 0) {
 				aux = toEightByteArray(op2);
-				Helper.saveAtoB(aux, resposta);
+				resposta = Helper.concatTwoArray(aux, resposta);
 			}
 
 			if (resposta.length >= 8 && op3 != 0) {
 				aux = toEightByteArray(op3);
-				Helper.saveAtoB(aux, resposta);
+				resposta = Helper.concatTwoArray(aux, resposta);
 			}
 
 			if (resposta.length >= 10 && op4 != 0) {
 				aux = toEightByteArray(op4);
-				Helper.saveAtoB(aux, resposta);
+				resposta = Helper.concatTwoArray(aux, resposta);
 			}
-			
-			respostaRed = Helper.reductArray(resposta);
+
+		
 
 
 			break;
 		}
 
-		return respostaRed;
+		return resposta;
 	}
 
 	public static byte[] toByteArray(int value) {
 		return ByteBuffer.allocate(4).putInt(value).array();
+	}
+
+	public static byte[] toByteArray(short value) {
+		return ByteBuffer.allocate(2).putShort(value).array();
+	}
+
+	public static byte[] toByteArray(long value) {
+		return ByteBuffer.allocate(8).putLong(value).array();
 	}
 
 	public static byte[] toTwoByteArray(int value) {
@@ -161,7 +167,7 @@ public class Encoder {
 	public static byte[] toFourByteArray(int value) {
 		return new byte[] { (byte) (value >> 24), (byte) (value >> 16), (byte) (value >> 8), (byte) value };
 	}
-	
+
 	public static byte[] toEightByteArray(long value) {
 		return new byte[] { (byte) (value >> 32), (byte) (value >> 24), (byte) (value >> 16), (byte) (value >> 8), (byte) value };
 	}

@@ -15,16 +15,16 @@ public static ArrayList<String> parse(String entrada) {
 	ArrayList<String> tokens = new ArrayList<>();
 
     
-	ArrayList<String> regexs = new ArrayList<>();
+	/*ArrayList<String> regexs = new ArrayList<>();
 	final ArrayList<Pattern> patterns = new ArrayList<>();
+*/
 
-
-	String regex0 = "(mov)\\s+(\\w+),\\s+(\\w+)\\Z";
-	String regex1 = "(add)\\s+(\\w+),\\s+(\\w+)\\Z";
+	String regex0 = "(\\w+)\\s+(\\w+),\\s+(\\w+)";
+	/*String regex1 = "(add)\\s+(\\w+),\\s+(\\w+)\\Z";
 	String regex2 = "(inc)\\s+(\\w+)\\Z";
-	String regex3 = "(imul)\\s+(\\w+),\\s+(\\w+),\\s+(\\w+)\\Z";
+	String regex3 = "(imul)\\s+(\\w+),\\s+(\\w+),\\s+(\\w+)\\Z";*/
 
-	regexs.add(regex0);
+	/*regexs.add(regex0);
 	regexs.add(regex1);
 	regexs.add(regex2);
 	regexs.add(regex3);
@@ -32,18 +32,21 @@ public static ArrayList<String> parse(String entrada) {
 
 	for(String s : regexs) {
 		patterns.add(Pattern.compile(s));
-	}
+	}*/
 
+	Pattern p = Pattern.compile(regex0);
 	
-	for(Pattern p : patterns ) {
+/*	for(Pattern p : patterns ) {*/
 
 		Matcher m = p.matcher(entrada);
 
 		if(m.find()){
+			
 
-			switch(m.group(1)) {
+			switch(m.group(1).toUpperCase()) {
 
-			case "mov":
+			case "MOV":
+				
 				if(Validate.validateMov(m.group(1), m.group(2), m.group(3))){
 			        //VALIDAR LOGICAS DA ARQUITETURA E CHAMAR O ENCODER PARA TRANSFORMAR AS INFORMA��ES EM BYTES[] PARA IR AO BUFFER E/S
 					
@@ -51,13 +54,15 @@ public static ArrayList<String> parse(String entrada) {
 					tokens.add(m.group(2));
 					tokens.add(m.group(3));
 					
+				
+					
 					return tokens;
 				}
 				
 				
 				return null;
 				
-			case "add":
+			case "ADD":
 				if(Validate.validateAdd(m.group(1), m.group(2), m.group(3))) {
 			
 					tokens.add(m.group(1));
@@ -69,7 +74,7 @@ public static ArrayList<String> parse(String entrada) {
 				
 				return null;
 				
-			case "inc":
+			case "INC":
 
 				if(Validate.validateInc(m.group(1), m.group(2))){
 					
@@ -82,7 +87,7 @@ public static ArrayList<String> parse(String entrada) {
 				return null;
 
 			
-			case "imul":
+			case "IMUL":
 
 				if(Validate.validateImul(m.group(1), m.group(2), m.group(3), m.group(4))) {
 					
@@ -93,13 +98,14 @@ public static ArrayList<String> parse(String entrada) {
 					
 					return tokens;
 				}
+			default:
 				
 				return null;
 			}
 
 		} 
 		
-	}
+	/*}*/
 	return null;
 }
 }

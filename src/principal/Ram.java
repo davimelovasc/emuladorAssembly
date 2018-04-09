@@ -1,5 +1,7 @@
 package principal;
 
+import java.util.Base64.Decoder;
+
 import utils.Constantes;
 import utils.Helper;
 import utils.Logger;
@@ -10,7 +12,7 @@ public class Ram {
 	private Barramento barramento;
 
 	public Ram(int size) {
-		if(size == 8 || size == 16 || size == 32 )
+		if(size == 32 || size == 64 || size == 128 )
 			this.ram = new byte[size];
 		else {
 			Logger.printError("Ram", "Tamanho de ram inválido");
@@ -38,8 +40,17 @@ public class Ram {
 		Dado d = barramento.reciveRam();
 		String controle = d.getControle();
 		byte[] dados = d.getDados();
-		int endereco = Integer.parseInt(d.getEndereco());
-		//validar endereco
+		int endereco = 0;
+		
+		//Validação do endereço
+		if(! Helper.validarEndereco(d.getEndereco())) 
+			Logger.printError(getClass().getName(), "Endereco informádo inválido");
+		
+		if(d.isOffset()) {
+			endereco = Helper.formatarEndereco(d.getEndereco()) + Main.tamInstrucao*2; //transforma end. fisico em end. logico
+		}else {
+			endereco = Helper.formatarEndereco(d.getEndereco());
+		}
 		
 		if(controle.equals(Constantes.KEY_ESCREVER)) {
 			
@@ -57,6 +68,16 @@ public class Ram {
 			return dados;
 			
 			
+		} else if(controle.equals(Constantes.KEY_ATUALIZAR)){
+			if(Main.cpu.getTam() == 16) {
+				this.ram[endereco] += CPU.fromTwoByteArray(dados);
+			}else if (Main.cpu.getTam() == 32) {
+				this.ram[endereco] += CPU.fromFourByteArray(dados);
+			}else if(Main.cpu.getTam() == 64) {
+				this.ram[endereco] += CPU.fromEightByteArray(dados);
+			}
+			
+			
 		} else {
 			//erro
 		}
@@ -68,6 +89,61 @@ public class Ram {
 		
 		
 	}
+	
+/*	public boolean verificarEspacoRamInstrucao() {
+		int espacoReservado;
+		int nescessario;
+		
+		switch(Main.cpu.getTam()) {
+		case 16:
+			espacoReservado = 16; //duas instrucoes de 8 bytes cada
+			nescessario = 8; //bytes nescessario para a maaior intrunção
+			for (int i = 0; i < espacoReservado; i++) {
+				if(getCelulas()[i] == 0) {
+					nescessario--;
+				} else {
+					nescessario = 8;
+				}
+				if(nescessario == 0) {
+					return true;
+				}
+			}
+			
+			return false;
+		case 32:
+			espacoReservado = 32; //duas instrucoes de 16 bytes cada
+			nescessario = 16; //bytes nescessario para a maior instrunção
+			for (int i = 0; i < espacoReservado; i++) {
+				if(getCelulas()[i] == 0) {
+					nescessario--;
+				} else {
+					nescessario = 16;
+				}
+				if(nescessario == 0) {
+					return true;
+				}
+			}
+			
+			return false;
+		case 64:
+			espacoReservado = 64; //duas instrucoes de 32 bytes cada
+			nescessario = 32; //bytes nescessario para a maior instrunção
+			for (int i = 0; i < espacoReservado; i++) {
+				if(getCelulas()[i] == 0) {
+					nescessario--;
+				} else {
+					nescessario = 32;
+				}
+				if(nescessario == 0) {
+					return true;
+				}
+			}
+			
+			
+		
+		}
+		return false;
+	}*/
 	
 	
 	

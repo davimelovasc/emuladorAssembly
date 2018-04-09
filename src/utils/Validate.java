@@ -12,12 +12,13 @@ public class Validate {
 		if(! a.toLowerCase().equals("mov"))
 			return false;
 
-		if(! isRegistrador(b) || ! isEndRam(b))
+		if(! isRegistrador(b) && ! isEndRam(b))
 			return false;
 		
-		if(! isInteger(c) || ! isRegistrador(c))
+		if(! isInteger(c) && ! isRegistrador(c))
 			return false;
 
+		
 		return true;
 	}
 
@@ -26,10 +27,10 @@ public class Validate {
 		if(! a.toLowerCase().equals("add"))
 			return false;
 		
-		if(! isRegistrador(b) || ! isEndRam(b))
+		if(! isRegistrador(b) && ! isEndRam(b))
 			return false;
 		
-		if(! isInteger(c) || ! isRegistrador(c))
+		if(! isInteger(c) && ! isRegistrador(c))
 			return false;
 		
 		return true;
@@ -39,7 +40,7 @@ public class Validate {
 		if(! a.toLowerCase().equals("inc"))
 			return false;
 		
-		if(! isRegistrador(b) || ! isEndRam(b))
+		if(! isRegistrador(b) && ! isEndRam(b))
 			return false;
 
 		return true;
@@ -49,19 +50,22 @@ public class Validate {
 		if(! a.toLowerCase().equals("imul"))
 			return false;
 
-		if(! isRegistrador(b) || ! isEndRam(b)) 
+		if(! isRegistrador(b) && ! isEndRam(b)) 
 			return false;
 		
-		if(! isRegistrador(c) || ! isEndRam(c) || ! isInteger(c))
+		if(! isRegistrador(c) && ! isEndRam(c) && ! isInteger(c))
 			return false;
 		
-		if(! isRegistrador(d) || ! isEndRam(d) || ! isInteger(d))
+		if(! isRegistrador(d) && ! isEndRam(d) && ! isInteger(d))
 			return false;
 
 		return true;
 	}
 	
 	public static boolean isEndRam(String s) {
+		if(! isInteger(s)) {
+			return false;
+		}
 		if(Integer.parseInt(s) < Main.ram.getCelulas().length) {
 			return true;
 		}
@@ -69,6 +73,15 @@ public class Validate {
 	}
 	
 	public static boolean isRegistrador(String s) {
+		if(isInteger(s)) {
+		if(		Constantes.REGISTRADOR_A_INT == Integer.valueOf(s) ||
+				Constantes.REGISTRADOR_B_INT == Integer.valueOf(s) ||
+				Constantes.REGISTRADOR_C_INT == Integer.valueOf(s) ||
+				Constantes.REGISTRADOR_D_INT == Integer.valueOf(s) 	) {
+			return true;
+		}
+		}
+		
 		if(s.equals("A") || s.equals("B") || s.equals("C") || s.equals("D") || s.equals("PI")) {
 			return true;
 		}

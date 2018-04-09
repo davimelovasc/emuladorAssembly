@@ -25,6 +25,7 @@ public class Constantes {
 	
 	public static final String KEY_LER = "ler"; 
 	public static final String KEY_ESCREVER = "escrever"; 
+	public static final String KEY_ATUALIZAR = "atualizar";
 	public static final String KEY_INTERCEPTOR = "interceptor";
 	
 	
@@ -61,9 +62,25 @@ public class Constantes {
 			return "";
 		}
 	}
+	
+	public static int NumRegOnVetor(int registrador) {
+		switch(registrador) {
+		case REGISTRADOR_A_INT:
+			return 0;
+		case REGISTRADOR_B_INT:
+			return 1;
+		case REGISTRADOR_C_INT:
+			return 2;
+		case REGISTRADOR_D_INT:
+			return 3;
+		case REGISTRADOR_PI_INT:
+			return 4;
+		}
+		return 99;
+	}
 
 	public static int getKey(String s) {
-		switch(s) {
+		switch(s.toUpperCase()) {
 		case "A":
 			return REGISTRADOR_A_INT;
 		case "B":
@@ -74,14 +91,15 @@ public class Constantes {
 			return REGISTRADOR_D_INT;
 		case "PI":
 			return REGISTRADOR_PI_INT;
-		case "mov":
+		case "MOV":
 			return MOV_INT;
-		case "add":
+		case "ADD":
 			return ADD_INT;
-		case "inc":
+		case "INC":
 			return INC_INT;
-		case "imul":
+		case "IMUL":
 			return IMUL_INT;
+
 		default:
 			return Integer.parseInt(s);
 		}
