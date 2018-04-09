@@ -6,19 +6,9 @@ public class EntradaESaida {
 
 	private byte[] buffer;
 	private Barramento barramento;
-	
-	public EntradaESaida(int tam) {
-		switch(tam) {
-		case 4:
-			buffer = new byte[4];
-			break;
-		case 8:
-			buffer = new byte[8];
-			break;
-		case 16:
-			buffer = new byte[16];
-			break;
-		}
+
+	public EntradaESaida() {
+		buffer = new byte[Main.tamInstrucao]; //Buffer sempre tera o espaco de duas instrucoes
 	}
 
 	public byte[] getBuffer() {
@@ -36,18 +26,17 @@ public class EntradaESaida {
 	public void setBarramento(Barramento barramento) {
 		this.barramento = barramento;
 	}
-	
+
 	public boolean addToBuffer(byte[] b) {
-		
-		if(verificarEspacoBuffer(b.length)) {
-			Helper.saveAtoB(b, this.buffer);
-			return true;
+		if(Helper.isVazio(buffer)) {
+			buffer = b;
+		} else {
+			System.out.println("ENTROU");
+			buffer = Helper.concatTwoArray(b, buffer);	//adiciona ao buffer
 		}
-		
-		return false;
-		
+		return true;
 	}
-	
+
 	public boolean verificarEspacoBuffer(int nescessario) {
 		int cont = 0;
 		for(int i = 0; i < this.getBuffer().length; i++) {
@@ -59,9 +48,9 @@ public class EntradaESaida {
 				cont = 0;
 			}
 		}
-		
+
 		return false;
 	}
-	
-	
+
+
 }

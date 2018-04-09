@@ -1,1 +1,2 @@
 MOV A, 2
+MOV B, A

@@ -12,6 +12,14 @@ public class Helper {
 		return false;
 	}
 
+	public static boolean isVazio(byte[] b) {
+		for (int i = 0; i < b.length; i++) {
+			if(b[i] != 0)
+				return false;
+		}
+		return true;
+	}
+
 	/*public static String fromInt(int i) {
 		switch (i) {
 		case 250:
@@ -27,16 +35,20 @@ public class Helper {
 			return Integer.toString(i);
 		}
 	}*/
-	
-	public static byte[] invertArray(byte[] a) {
-		for(int i = 0; i < a.length / 2; i++){
-		    byte temp = a[i];
-		    a[i] = a[a.length - i - 1];
-		   a[a.length - i - 1] = temp;
+
+	public static void ordenarRam() { //TODO Ajeitar
+		byte[] ram = Main.ram.getCelulas(); 
+		byte aux;
+
+		for (int i = 0; i < ram.length / 2; i++) {
+			aux =  ram[Main.tamInstrucao + i];
+			ram[i] = aux;
+			ram[Main.tamInstrucao + i] = aux;
 		}
-		return a;
+		
+		Main.ram.setRam(ram); 
 	}
-	
+
 	public static byte[] concatTwoArray(byte[] b, byte[] a) {
 		byte[] c = new byte[a.length + b.length];
 		System.arraycopy(a, 0, c, 0, a.length);
@@ -68,20 +80,20 @@ public class Helper {
 	public static int formatarEndereco(String endereco) { // retorna a string correspondente ao hexadecimal
 		endereco = endereco.trim();
 		if(endereco.contains("x")) {
-		endereco = endereco.substring(2); // ex.: entrada: 0x00F2 sa�da: 00F2
-		return hexaToDec(endereco);
+			endereco = endereco.substring(2); // ex.: entrada: 0x00F2 sa�da: 00F2
+			return hexaToDec(endereco);
 		}
-		
+
 		return Integer.parseInt(endereco);
-		
-	
+
+
 	}
 
 	public static int hexaToDec(String hexa) {
 		int rs = Integer.parseInt(hexa.trim(), 16);
 		return rs;
 	}
-	
+
 	public static byte[] reductArray(byte[] b) {
 		int x = 0;
 		byte[] c;
@@ -92,15 +104,15 @@ public class Helper {
 					c[j] = b[j];
 				}
 				return c;
-				
+
 			}else {
 				x++;
 			}
 		}
-		
+
 		return null;
 	}
-	
+
 	public static int[] reductArray(int[] b) {
 		int x = 0;
 		int[] c;
@@ -111,15 +123,15 @@ public class Helper {
 					c[j] = b[j];
 				}
 				return c;
-				
+
 			}else {
 				x++;
 			}
 		}
-		
+
 		return null;
 	}
-	
+
 	public static boolean validarEndereco(String endereco) {
 		switch (Main.cpu.getTam()) {
 		case 16:
@@ -141,7 +153,7 @@ public class Helper {
 			return false;
 		}
 	}
-	
+
 	public static void printArrayByte(byte[] b) {
 		for (int i = 0; i < b.length; i++) {
 			System.out.println(b[i]);

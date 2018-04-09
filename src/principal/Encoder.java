@@ -3,6 +3,8 @@ package principal;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
+import javax.swing.plaf.synth.SynthSeparatorUI;
+
 import utils.Constantes;
 import utils.Helper;
 
@@ -33,7 +35,6 @@ public class Encoder {
 
 
 		byte[] resposta = new byte[Main.cpu.getTam()/8];
-		byte[] respostaRed = null;
 		byte[] aux;
 		// ArrayList<Byte> b = new ArrayList<>();
 		int op1 = 0, op2 = 0, op3 = 0, op4 = 0;
@@ -42,14 +43,13 @@ public class Encoder {
 
 		op1 = Constantes.getKey(instrucoes.get(1));
 
-		if (instrucoes.get(2) != null) {
+		if (instrucoes.size() > 2) {
 			op2 = Constantes.getKey(instrucoes.get(2));
 
 		}
 
 		if (instrucoes.size() > 3) {
 			op3 = Constantes.getKey(instrucoes.get(3));
-
 		}
 
 		if (instrucoes.size() > 4) {
@@ -72,17 +72,28 @@ public class Encoder {
 			if (resposta.length >= 6 && op2 != 0) {
 				aux = toTwoByteArray(op2);
 				resposta = Helper.concatTwoArray(aux, resposta);
+			} else {
+				aux = toTwoByteArray((short) 0);
+				resposta = Helper.concatTwoArray(aux, resposta);
 			}
-
+			
 			if (resposta.length >= 8 && op3 != 0) {
 				aux = toTwoByteArray(op3);
 				resposta = Helper.concatTwoArray(aux, resposta);
+			} else {
+				aux = toTwoByteArray((short) 0);
+				resposta = Helper.concatTwoArray(aux, resposta);
 			}
+			
 
 			if (resposta.length >= 10 && op4 != 0) {
 				aux = toTwoByteArray(op4);
 				resposta = Helper.concatTwoArray(aux, resposta);
+			} else {
+				aux = toTwoByteArray((short) 0);
+				resposta = Helper.concatTwoArray(aux, resposta);
 			}
+			
 
 			break;
 		case 32:
@@ -96,18 +107,29 @@ public class Encoder {
 			if (resposta.length >= 6 && op2 != 0) {
 				aux = toFourByteArray(op2);
 				resposta = Helper.concatTwoArray(aux, resposta);
+			} else {
+				aux = toFourByteArray((int) 0);
+				resposta = Helper.concatTwoArray(aux, resposta);
 			}
+			
 
 			if (resposta.length >= 8 && op3 != 0) {
 				aux = toFourByteArray(op3);
 				resposta = Helper.concatTwoArray(aux, resposta);
+			} else {
+				aux = toFourByteArray((int) 0);
+				resposta = Helper.concatTwoArray(aux, resposta);
 			}
+			
 
 			if (resposta.length >= 10 && op4 != 0) {
 				aux = toFourByteArray(op4);
 				resposta = Helper.concatTwoArray(aux, resposta);
+			} else {
+				aux = toFourByteArray((int) 0);
+				resposta = Helper.concatTwoArray(aux, resposta);
 			}
-
+			
 			
 			break;
 
@@ -123,21 +145,28 @@ public class Encoder {
 			if (resposta.length >= 6 && op2 != 0) {
 				aux = toEightByteArray(op2);
 				resposta = Helper.concatTwoArray(aux, resposta);
+			} else {
+				aux = toEightByteArray((long) 0);
+				resposta = Helper.concatTwoArray(aux, resposta);
 			}
+			
 
 			if (resposta.length >= 8 && op3 != 0) {
 				aux = toEightByteArray(op3);
+				resposta = Helper.concatTwoArray(aux, resposta);
+			} else {
+				aux = toEightByteArray((long) 0);
 				resposta = Helper.concatTwoArray(aux, resposta);
 			}
 
 			if (resposta.length >= 10 && op4 != 0) {
 				aux = toEightByteArray(op4);
 				resposta = Helper.concatTwoArray(aux, resposta);
+			} else {
+				aux = toEightByteArray((long) 0);
+				resposta = Helper.concatTwoArray(aux, resposta);
 			}
-
 		
-
-
 			break;
 		}
 

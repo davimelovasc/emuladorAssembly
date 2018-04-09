@@ -21,7 +21,13 @@ public class Ram {
 
 	}
 
-
+	
+	public void setRam(byte[] celulas) {
+		if(celulas.length == this.ram.length) {
+			this.ram = celulas;
+		}
+	}
+		
 	public byte[] getCelulas() {
 		return ram;
 	}
@@ -35,39 +41,43 @@ public class Ram {
 	public void setBarramento(Barramento barramento) {
 		this.barramento = barramento;
 	}
-	
+
 	public byte[] recive() {
 		Dado d = barramento.reciveRam();
 		String controle = d.getControle();
 		byte[] dados = d.getDados();
 		int endereco = 0;
-		
+
 		//Validação do endereço
 		if(! Helper.validarEndereco(d.getEndereco())) 
 			Logger.printError(getClass().getName(), "Endereco informádo inválido");
-		
+
 		if(d.isOffset()) {
 			endereco = Helper.formatarEndereco(d.getEndereco()) + Main.tamInstrucao*2; //transforma end. fisico em end. logico
 		}else {
 			endereco = Helper.formatarEndereco(d.getEndereco());
 		}
-		
+
 		if(controle.equals(Constantes.KEY_ESCREVER)) {
-			
-			for(int i = 0; i < dados.length; i++) {
-				this.ram[endereco+i] = dados[i];
+
+			if(this.getCelulas().length > dados.length) {
+				for(int i = 0; i < dados.length; i++) {
+					this.ram[endereco+i] = dados[i];
+				}
+			}else {
+				Logger.printError(getClass().getName(), "Tamanho da ram muito pequena para armazenar duas palavras na ram");
 			}
-			
-			
+
+
 		} else if(controle.equals(Constantes.KEY_LER)) {
-			
+
 			for(int i = 0; i < dados.length; i ++) {
 				dados[i] = this.ram[endereco+i];
 			}
-			
+
 			return dados;
-			
-			
+
+
 		} else if(controle.equals(Constantes.KEY_ATUALIZAR)){
 			if(Main.cpu.getTam() == 16) {
 				this.ram[endereco] += CPU.fromTwoByteArray(dados);
@@ -76,24 +86,24 @@ public class Ram {
 			}else if(Main.cpu.getTam() == 64) {
 				this.ram[endereco] += CPU.fromEightByteArray(dados);
 			}
-			
-			
+
+
 		} else {
 			//erro
 		}
 		return null;
-		
+
 	}
-	
+
 	public void sendToCpu(byte[] dados) {
-		
-		
+
+
 	}
-	
-/*	public boolean verificarEspacoRamInstrucao() {
+
+	/*	public boolean verificarEspacoRamInstrucao() {
 		int espacoReservado;
 		int nescessario;
-		
+
 		switch(Main.cpu.getTam()) {
 		case 16:
 			espacoReservado = 16; //duas instrucoes de 8 bytes cada
@@ -108,7 +118,7 @@ public class Ram {
 					return true;
 				}
 			}
-			
+
 			return false;
 		case 32:
 			espacoReservado = 32; //duas instrucoes de 16 bytes cada
@@ -123,7 +133,7 @@ public class Ram {
 					return true;
 				}
 			}
-			
+
 			return false;
 		case 64:
 			espacoReservado = 64; //duas instrucoes de 32 bytes cada
@@ -138,16 +148,16 @@ public class Ram {
 					return true;
 				}
 			}
-			
-			
-		
+
+
+
 		}
 		return false;
 	}*/
-	
-	
-	
-	
+
+
+
+
 
 
 	/*public void setCelulas(byte[] celulas) {
@@ -155,25 +165,25 @@ public class Ram {
 	}*/
 
 
-	
 
-/*
+
+	/*
 	public byte ler(String endereco) {
 		endereco = Helpers.formatarEndereco(endereco);
 		if(! validarEndereco(endereco)) {
 			Logger.printError(this.getClass().getName(), "Erro no endere�o de ram!");
 			return 0;
 		}
-			
+
 		int end = Helpers.hexaToDec(Helpers.formatarEndereco(endereco));
-		
+
 		if(end >= ram.length) {
 			Logger.printError("Ram", Constantes.ERROR_RAM_MESSAGE1);
 			return 0;
 		} else {
 			return ram[end];
 		}
-		
+
 	}
 
 
@@ -184,7 +194,7 @@ public class Ram {
 			return 0;
 		}
 		int end = Helpers.hexaToDec(endereco);
-		
+
 		if(end >= ram.length) {
 			Logger.printError("Ram", Constantes.ERROR_RAM_MESSAGE1);
 			return 0;
@@ -193,9 +203,9 @@ public class Ram {
 			return ram[end];
 		}
 	}
-	
+
 	public static boolean validarEndereco(String endereco) {
-		
+
 		return true;
 	}*/
 

@@ -20,19 +20,19 @@ public class CPU {
 		switch(tam_palavra) {
 
 		case 16:
-			registradores16 = new short[4];
+			registradores16 = new short[5];
 			tam = 16;
 			Main.tamInstrucao = 8; //4 tokens de 2 bytes cada. ex: imul A B C
 			Main.ponteiroBuffer = "0x0000";
 			break;
 		case 32:
-			registradores32 = new int[4];
+			registradores32 = new int[5];
 			tam = 32;
 			Main.tamInstrucao = 16;
 			Main.ponteiroBuffer = "0x000000";
 			break;
 		case 64:
-			registradores64 = new long[4];
+			registradores64 = new long[5];
 			tam = 64;
 			Main.tamInstrucao = 32;
 			Main.ponteiroBuffer = "0x00000000";

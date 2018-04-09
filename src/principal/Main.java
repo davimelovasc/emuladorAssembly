@@ -32,7 +32,6 @@ public class Main {
 
 		while(! linhas.isEmpty()) {
 
-
 			for(int i = 0; l < linhas.size(); i++ ) { //ler todas as linhas, porem de duas em duas
 				if(i==2)
 					break;
@@ -40,27 +39,21 @@ public class Main {
 
 				ArrayList<String> tokens =  Parser.parse(linha); //le a linha, faz as validacoes e retorna as tokens
 				
-				
-				
 				instrucoesEmByte = Encoder.encode(tokens); //transforma as tokens da linha em byte[]
 
-				System.out.println("INSTRUÇÕES EM BYTES: ");
+				/*System.out.println("INSTRUÇÕES EM BYTES: ");
 				Helper.printArrayByte(instrucoesEmByte);
-				System.out.println("FIM");
-				
-
-				
+				System.out.println("FIM");*/
 				
 				if(entradaESaida.addToBuffer(instrucoesEmByte)) { //tokens em byte sao adicionadas ao buffer (se tiver espaco)
-					linhas.remove(l);
+					/*System.out.println("BUFFER EM BYTE");
+					Helper.printArrayByte(Main.entradaESaida.getBuffer());*/
+					//linhas.remove(l);
 					l++;
-					
-					continue;
 				} else
 					break;
-
-				//ATE AQUI OK! CHECAR COM 2 INTERACAO
 			}
+			
 
 		
 			
@@ -70,8 +63,12 @@ public class Main {
 
 				barramento.send(Constantes.MOD_ENTRADA_E_SAIDA, Constantes.RAM, new Dado(Constantes.KEY_ESCREVER, entradaESaida.getBuffer(), ponteiroBuffer, false));
 				ram.recive(); //executa
-
-				//instruncao ja estao salva no endereco informado
+			
+				//Helper.ordenarRam(); AJEITAR
+				Helper.printArrayByte(ram.getCelulas()); //APAGAR
+				//ATE AQUI OK! Instrucoes na ram, precisa ordenar
+				
+				
 				//interceptor																												//end -> msm que foi passado para salvar na ram
 				barramento.send(Constantes.MOD_ENTRADA_E_SAIDA, Constantes.CPU, new Dado(Constantes.KEY_INTERCEPTOR, new byte[tamInstrucao], ponteiroBuffer));
 				cpu.recive(); //aqui dentro a cpu manda pede os dados da ram
@@ -108,10 +105,10 @@ public class Main {
 		cpu = new CPU(32);
 
 		System.out.println("Informe o tamanho da RAM: ");
-		ram = new Ram(32);
+		ram = new Ram(64);
 
 		System.out.println("Informe o tamanho do Buffer de entrada e saída: ");
-		entradaESaida = new EntradaESaida(16);
+		entradaESaida = new EntradaESaida();
 
 		cpu.setBarramento(barramento);
 		ram.setBarramento(barramento);
