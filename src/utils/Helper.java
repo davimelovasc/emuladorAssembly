@@ -19,6 +19,35 @@ public class Helper {
 		}
 		return true;
 	}
+	
+	public static void clearBuffer() {
+		byte[] b = 	Main.entradaESaida.getBuffer();
+		
+		for (int i = 0; i < b.length; i++) {
+			b[i] = 0;
+		}
+		
+		Main.entradaESaida.setBuffer(b);
+	}
+	
+	public static void removerInstrucaoRam() {
+		byte b[] = Main.ram.getCelulas();
+		
+		
+		if(b[Main.tamInstrucao/4 -1] != 0) {
+			for (int i = 0; i < Main.tamInstrucao; i++) {
+				b[i] = 0;
+			}
+		} else {
+			for (int i = Main.tamInstrucao; i < Main.tamInstrucao*2; i++) {
+				b[i] = 0;
+			}
+		}
+		
+		Main.ram.setRam(b);
+		
+		
+	}
 
 	/*public static String fromInt(int i) {
 		switch (i) {
@@ -133,20 +162,37 @@ public class Helper {
 	}
 
 	public static boolean validarEndereco(String endereco) {
+		if(Validate.isInteger(endereco))
+			return true;
 		switch (Main.cpu.getTam()) {
 		case 16:
-			if(endereco.length() == 6) { //ex: 0x0001
+			if(endereco.contains("x")) {
+				if(endereco.length() == 6) { 
+					return true;
+				}
+			} else if(endereco.length() == 4) {
 				return true;
 			}
 			return false;
 		case 32:
-			if(endereco.length() == 7) { 
+			if(endereco.contains("x")) {
+				if(endereco.length() == 8) { 
+					return true;
+				}
+			} else if(endereco.length() == 6) {
 				return true;
 			}
+			return false;
+			
 		case 64:
-			if(endereco.length() == 8) {
+			if(endereco.contains("x")) {
+				if(endereco.length() == 10) { 
+					return true;
+				}
+			} else if(endereco.length() == 8) {
 				return true;
 			}
+			return false;
 
 		default:
 			System.out.println("Valor de memoria informado é diferente do tam. da palavra");

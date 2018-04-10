@@ -15,16 +15,16 @@ public static ArrayList<String> parse(String entrada) {
 	ArrayList<String> tokens = new ArrayList<>();
 
     
-	/*ArrayList<String> regexs = new ArrayList<>();
-	final ArrayList<Pattern> patterns = new ArrayList<>();
-*/
+	ArrayList<String> regexs = new ArrayList<>();
+	ArrayList<Pattern> patterns = new ArrayList<>();
 
-	String regex0 = "(\\w+)\\s+(\\w+),\\s+(\\w+)";
-	/*String regex1 = "(add)\\s+(\\w+),\\s+(\\w+)\\Z";
-	String regex2 = "(inc)\\s+(\\w+)\\Z";
-	String regex3 = "(imul)\\s+(\\w+),\\s+(\\w+),\\s+(\\w+)\\Z";*/
 
-	/*regexs.add(regex0);
+	String regex0 = "(MOV)\\s+(\\w+),\\s+(\\w+)";
+	String regex1 = "(ADD)\\s+(\\w+),\\s+(\\w+)";
+	String regex2 = "(INC)\\s+(\\w+)";
+	String regex3 = "(IMUL)\\s+(\\w+),\\s+(\\w+),\\s+(\\w+)";
+
+	regexs.add(regex0);
 	regexs.add(regex1);
 	regexs.add(regex2);
 	regexs.add(regex3);
@@ -32,11 +32,11 @@ public static ArrayList<String> parse(String entrada) {
 
 	for(String s : regexs) {
 		patterns.add(Pattern.compile(s));
-	}*/
+	}
 
-	Pattern p = Pattern.compile(regex0);
+	//Pattern p = Pattern.compile(regex0);
 	
-/*	for(Pattern p : patterns ) {*/
+	for(Pattern p : patterns ) {
 
 		Matcher m = p.matcher(entrada);
 
@@ -53,7 +53,7 @@ public static ArrayList<String> parse(String entrada) {
 					tokens.add(m.group(1));
 					tokens.add(m.group(2));
 					tokens.add(m.group(3));
-					
+
 				
 					
 					return tokens;
@@ -88,7 +88,7 @@ public static ArrayList<String> parse(String entrada) {
 
 			
 			case "IMUL":
-
+				
 				if(Validate.validateImul(m.group(1), m.group(2), m.group(3), m.group(4))) {
 					
 					tokens.add(m.group(1));
@@ -103,9 +103,12 @@ public static ArrayList<String> parse(String entrada) {
 				return null;
 			}
 
-		} 
+		} else {
+			
+		}
 		
-	/*}*/
+	}
+	Logger.printError(Parser.class.getName(), "Falha na validação sintaxica");
 	return null;
 }
 }

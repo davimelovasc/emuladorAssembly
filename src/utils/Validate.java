@@ -63,13 +63,15 @@ public class Validate {
 	}
 	
 	public static boolean isEndRam(String s) {
-		if(! isInteger(s)) {
-			return false;
-		}
-		if(Integer.parseInt(s) < Main.ram.getCelulas().length) {
+
+		if(Helper.validarEndereco(s))
 			return true;
-		}
+		else 
+			Logger.printError(Validate.class.getName(), "Endereço de memoria inválido");
+			
 		return false;
+		
+
 	}
 	
 	public static boolean isRegistrador(String s) {

@@ -6,6 +6,7 @@ import java.util.Arrays;
 
 import utils.Constantes;
 import utils.Helper;
+import utils.Logger;
 import utils.Validate;
 
 public class CPU {
@@ -40,6 +41,8 @@ public class CPU {
 		}
 
 	}
+
+
 
 
 
@@ -165,6 +168,54 @@ public class CPU {
 	}*/
 
 
+	public long[] getRegistradores64() {
+		return registradores64;
+	}
+
+
+
+
+
+	public void setRegistradores64(long[] registradores64) {
+		this.registradores64 = registradores64;
+	}
+
+
+
+
+
+	public int[] getRegistradores32() {
+		return registradores32;
+	}
+
+
+
+
+
+	public void setRegistradores32(int[] registradores32) {
+		this.registradores32 = registradores32;
+	}
+
+
+
+
+
+	public short[] getRegistradores16() {
+		return registradores16;
+	}
+
+
+
+
+
+	public void setRegistradores16(short[] registradores16) {
+		this.registradores16 = registradores16;
+	}
+
+
+
+
+
 	public void recive() {
 		Dado d = barramento.reciveCPU();
 		byte[] dados = d.getDados();
@@ -220,7 +271,7 @@ public class CPU {
 
 
 
-				executarInstrucoes(Helper.reductArray(inst)); //tira os espacos vazios
+				executarInstrucoes(inst); //tira os espacos vazios
 
 
 				break;
@@ -231,7 +282,7 @@ public class CPU {
 				int op2_int = 0;
 				int op3_int = 0;
 
-				dados = Arrays.copyOfRange(dados, 0, 4);
+				acao = Arrays.copyOfRange(dados, 0, 4);
 				op1 = Arrays.copyOfRange(dados, 4, 8);
 				op2 = null;
 				op3 = null;
@@ -261,7 +312,7 @@ public class CPU {
 				inst[2] = op2_int;
 				inst[3] = op3_int;
 
-				executarInstrucoes(Helper.reductArray(inst));
+				executarInstrucoes(inst);
 
 
 				break;
@@ -272,7 +323,7 @@ public class CPU {
 				long op2_long = 0;
 				long op3_long = 0;
 
-				dados = Arrays.copyOfRange(dados, 0, 8);
+				acao = Arrays.copyOfRange(dados, 0, 8);
 				op1 = Arrays.copyOfRange(dados, 8, 16);
 				op2 = null;
 				op3 = null;
@@ -304,7 +355,7 @@ public class CPU {
 				inst[2] = (int) op2_long;
 				inst[3] = (int) op3_long;
 
-				executarInstrucoes(Helper.reductArray(inst));
+				executarInstrucoes(inst);
 
 				break;
 
@@ -317,18 +368,22 @@ public class CPU {
 			int tamInstrucao = d.getDados().length;
 			int enderecoFormatado = Helper.formatarEndereco(endereco);
 
+
 			switch(tam) {
 			case 16:
 				registradores16[4] = (short) enderecoFormatado; //PI é atualizado
+				System.out.println("\nRegistrador PI atualizado!\nPI: "+ registradores16[4]);
 				barramento.send(Constantes.CPU, Constantes.RAM, new Dado(Constantes.KEY_LER, new byte[tamInstrucao], endereco, false));
 				break;
 
 			case 32:
 				registradores32[4] = enderecoFormatado; //PI é atualizado
+				System.out.println("\nRegistrador PI atualizado!\nPI: "+ registradores32[4]);
 				barramento.send(Constantes.CPU, Constantes.RAM, new Dado(Constantes.KEY_LER, new byte[tamInstrucao], endereco, false));
 				break;
 			case 64:
 				registradores64[4] = enderecoFormatado; //PI é atualizado
+				System.out.println("\nRegistrador PI atualizado!\nPI: "+ registradores64[4]);
 				barramento.send(Constantes.CPU, Constantes.RAM, new Dado(Constantes.KEY_LER, new byte[tamInstrucao], endereco, false));
 				break;
 			}
@@ -398,21 +453,97 @@ public class CPU {
 		case Constantes.MOV_INT: 
 			//a[1] = a[2];
 			execMov(a);
+
+			System.out.println("\nEXECUTOU MOV\n");
+
 			break;
 		case Constantes.ADD_INT:
 			//a[1] = a[1] + a[2];
 			execAdd(a);
+			System.out.println("\nEXECUTOU ADD\n");
 			break;
 		case Constantes.INC_INT:
 			//a[1]++;
 			execInc(a);
+			System.out.println("\nEXECUTOU INC\n");
 			break;
 		case Constantes.IMUL_INT:
-			
+			execImul(a);
+			System.out.println("\nEXECUTOU IMUL\n");
 			break;
 		}
 
+		Helper.removerInstrucaoRam();
+		Logger.printFeedBack();
+	}
 
+	public void execImul(int...a) {
+		if(a[1] < 0) { //a[1]e a[2] são registradores
+			
+			int x = Constantes.NumRegOnVetor(a[1]);
+			int y = Constantes.NumRegOnVetor(a[2]);
+			
+			if(a[3] < 0) { //a[3] é registrador
+
+				int z = Constantes.NumRegOnVetor(a[3]);
+
+				if(tam == 16) {
+					registradores16[x] = (short) (registradores16[y] * registradores16[z]);
+				} else if(tam == 32) {
+					System.out.println("regs.: b" +registradores32[y] );
+					System.out.println("regs.: c" +registradores32[z] );
+					registradores32[x] = registradores32[y] * registradores32[z];
+				} else if(tam == 64) {
+					registradores64[x] = registradores64[y] * registradores64[z];
+				}
+			} else { //a[3] é numero
+				
+				if(tam == 16) {
+					registradores16[x] = (short) (registradores16[y] * a[3]);
+				} else if(tam == 32) {
+					registradores32[x] = registradores32[y] * a[3];
+				} else if(tam == 64) {
+					registradores64[x] = registradores64[y] * a[3];
+				}
+				
+			}
+		} else { //a[1] é end., a[2] é numero
+			if(a[3] > 0) { //a[3] é numero
+				byte[] b = null;
+				if(tam == 16) {
+					short s = (short) (a[2] * a[3]);
+					b = Encoder.toByteArray(s);
+					
+				} else if(tam == 32) {
+					int i = a[2] * a[3];
+					b = Encoder.toByteArray(i);
+				} else if(tam == 64) {
+					long l = a[2] * a[3];
+					b = Encoder.toByteArray(l);
+				}
+				
+				Main.barramento.send(Constantes.CPU, Constantes.RAM, new Dado(Constantes.KEY_ESCREVER, b, Integer.toString(a[1]), true));
+				Main.ram.recive();
+				
+			} else { //a[3] é registrador
+				int z = Constantes.NumRegOnVetor(a[3]);
+				byte[] b = null;
+				if(tam == 16) {
+					short s = (short) (a[2] * registradores16[z]);
+					b = Encoder.toByteArray(s);
+					
+				} else if(tam == 32) {
+					int i = a[2] * registradores32[z];
+					b = Encoder.toByteArray(i);
+				} else if(tam == 64) {
+					long l = a[2] * registradores64[z];
+					b = Encoder.toByteArray(l);
+				}
+				
+				Main.barramento.send(Constantes.CPU, Constantes.RAM, new Dado(Constantes.KEY_ESCREVER, b, Integer.toString(a[1]), true));
+				Main.ram.recive();
+			}
+		}
 	}
 
 	public void execAdd(int...a){
@@ -547,5 +678,6 @@ public class CPU {
 		}
 
 	}
+
 
 }

@@ -7,6 +7,7 @@ import javax.swing.plaf.synth.SynthSeparatorUI;
 
 import utils.Constantes;
 import utils.Helper;
+import utils.Validate;
 
 public class Encoder {
 
@@ -15,33 +16,20 @@ public class Encoder {
 
 	public static byte[] encode(ArrayList<String> instrucoes) {
 
-		/*ByteBuffer c;
-
-		if(Main.cpu.getTam() == 16) {
-			c = ByteBuffer.allocate(2);
-
-
-
-
-		}else if(Main.cpu.getTam() == 32) {
-			c = ByteBuffer.allocate(4);
-
-
-		}else if(Main.cpu.getTam() == 64) {
-			c = ByteBuffer.allocate(8);
-
-
-		}*/
-
-
 		byte[] resposta = new byte[Main.cpu.getTam()/8];
 		byte[] aux;
 		// ArrayList<Byte> b = new ArrayList<>();
-		int op1 = 0, op2 = 0, op3 = 0, op4 = 0;
-
+		int op1 = 0, op2 = 0, op3 = 0;
+		
 		int acao = Constantes.getKey(instrucoes.get(0));
 
-		op1 = Constantes.getKey(instrucoes.get(1));
+		if(Validate.isEndRam(instrucoes.get(1))) {
+			op1 = Helper.formatarEndereco(instrucoes.get(1));
+		}else {
+			op1 = Constantes.getKey(instrucoes.get(1));
+		}
+		
+		
 
 		if (instrucoes.size() > 2) {
 			op2 = Constantes.getKey(instrucoes.get(2));
@@ -52,24 +40,18 @@ public class Encoder {
 			op3 = Constantes.getKey(instrucoes.get(3));
 		}
 
-		if (instrucoes.size() > 4) {
-			op4 = Constantes.getKey(instrucoes.get(4));
-
-		}
+		
 
 		switch (Main.cpu.getTam()) {
-		// duvida: o Buffer de e/s tem que conseguir armazenar todas as tokens de uma
-		// vez ?
 		case 16:
 
-			aux = toTwoByteArray(acao); // duvida: o array b so podera guardar informação por vez? pode criar um array
-			
+			aux = toTwoByteArray(acao); 
 			resposta = aux;
 
 			aux = toTwoByteArray(op1);
 			resposta = Helper.concatTwoArray(aux, resposta);
 
-			if (resposta.length >= 6 && op2 != 0) {
+			if (op2 != 0) {
 				aux = toTwoByteArray(op2);
 				resposta = Helper.concatTwoArray(aux, resposta);
 			} else {
@@ -77,7 +59,7 @@ public class Encoder {
 				resposta = Helper.concatTwoArray(aux, resposta);
 			}
 			
-			if (resposta.length >= 8 && op3 != 0) {
+			if (op3 != 0) {
 				aux = toTwoByteArray(op3);
 				resposta = Helper.concatTwoArray(aux, resposta);
 			} else {
@@ -86,13 +68,7 @@ public class Encoder {
 			}
 			
 
-			if (resposta.length >= 10 && op4 != 0) {
-				aux = toTwoByteArray(op4);
-				resposta = Helper.concatTwoArray(aux, resposta);
-			} else {
-				aux = toTwoByteArray((short) 0);
-				resposta = Helper.concatTwoArray(aux, resposta);
-			}
+			
 			
 
 			break;
@@ -104,7 +80,7 @@ public class Encoder {
 			resposta = Helper.concatTwoArray(aux, resposta);
 			
 			
-			if (resposta.length >= 6 && op2 != 0) {
+			if (op2 != 0) {
 				aux = toFourByteArray(op2);
 				resposta = Helper.concatTwoArray(aux, resposta);
 			} else {
@@ -113,7 +89,7 @@ public class Encoder {
 			}
 			
 
-			if (resposta.length >= 8 && op3 != 0) {
+			if (op3 != 0) {
 				aux = toFourByteArray(op3);
 				resposta = Helper.concatTwoArray(aux, resposta);
 			} else {
@@ -122,13 +98,6 @@ public class Encoder {
 			}
 			
 
-			if (resposta.length >= 10 && op4 != 0) {
-				aux = toFourByteArray(op4);
-				resposta = Helper.concatTwoArray(aux, resposta);
-			} else {
-				aux = toFourByteArray((int) 0);
-				resposta = Helper.concatTwoArray(aux, resposta);
-			}
 			
 			
 			break;
@@ -142,7 +111,7 @@ public class Encoder {
 			aux = toEightByteArray(op1);
 			resposta = Helper.concatTwoArray(aux, resposta);
 
-			if (resposta.length >= 6 && op2 != 0) {
+			if (op2 != 0) {
 				aux = toEightByteArray(op2);
 				resposta = Helper.concatTwoArray(aux, resposta);
 			} else {
@@ -151,7 +120,7 @@ public class Encoder {
 			}
 			
 
-			if (resposta.length >= 8 && op3 != 0) {
+			if (op3 != 0) {
 				aux = toEightByteArray(op3);
 				resposta = Helper.concatTwoArray(aux, resposta);
 			} else {
@@ -159,13 +128,7 @@ public class Encoder {
 				resposta = Helper.concatTwoArray(aux, resposta);
 			}
 
-			if (resposta.length >= 10 && op4 != 0) {
-				aux = toEightByteArray(op4);
-				resposta = Helper.concatTwoArray(aux, resposta);
-			} else {
-				aux = toEightByteArray((long) 0);
-				resposta = Helper.concatTwoArray(aux, resposta);
-			}
+			
 		
 			break;
 		}
@@ -198,7 +161,9 @@ public class Encoder {
 	}
 
 	public static byte[] toEightByteArray(long value) {
-		return new byte[] { (byte) (value >> 32), (byte) (value >> 24), (byte) (value >> 16), (byte) (value >> 8), (byte) value };
+		ByteBuffer buffer = ByteBuffer.allocate(8);
+	    buffer.putLong(value);
+	    return buffer.array();
 	}
 
 }

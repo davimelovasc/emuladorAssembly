@@ -31,7 +31,7 @@ public class EntradaESaida {
 		if(Helper.isVazio(buffer)) {
 			buffer = b;
 		} else {
-			System.out.println("ENTROU");
+
 			buffer = Helper.concatTwoArray(b, buffer);	//adiciona ao buffer
 		}
 		return true;
