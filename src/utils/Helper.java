@@ -166,7 +166,7 @@ public class Helper {
 			return true;
 		switch (Main.cpu.getTam()) {
 		case 16:
-			if(endereco.contains("x")) {
+			if(endereco.contains("x") || endereco.contains("X")) {
 				if(endereco.length() == 6) { 
 					return true;
 				}
@@ -175,21 +175,21 @@ public class Helper {
 			}
 			return false;
 		case 32:
-			if(endereco.contains("x")) {
-				if(endereco.length() == 8) { 
+			if(endereco.contains("x") || endereco.contains("X") ) {
+				if(endereco.length() == 10) { 
 					return true;
 				}
-			} else if(endereco.length() == 6) {
+			} else if(endereco.length() == 8) {
 				return true;
 			}
 			return false;
 			
 		case 64:
-			if(endereco.contains("x")) {
-				if(endereco.length() == 10) { 
+			if(endereco.contains("x") || endereco.contains("X")) {
+				if(endereco.length() == 18) { 
 					return true;
 				}
-			} else if(endereco.length() == 8) {
+			} else if(endereco.length() == 16) {
 				return true;
 			}
 

@@ -5,7 +5,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import entradaesaida.Parser;
+import entradaDeDados.Parser;
 
 public class ReadFile {
 	
@@ -24,7 +24,7 @@ public class ReadFile {
 		   /* ArrayList<String> instrucoes = new ArrayList<>();*/
 		  
 		   try {
-	        FileReader fileReader = new FileReader("src/principal/"+fileName);
+	        FileReader fileReader = new FileReader("src/entradaDeDados/"+fileName);
 	        BufferedReader bufferedReader = new BufferedReader(fileReader);
 	        
 	        

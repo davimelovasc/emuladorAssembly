@@ -1,4 +1,4 @@
-package entradaesaida;
+package entradaDeDados;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;

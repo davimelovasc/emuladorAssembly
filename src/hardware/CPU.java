@@ -3,7 +3,7 @@ package hardware;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
-import entradaesaida.Encoder;
+import entradaDeDados.Encoder;
 import principal.Main;
 import utils.Constantes;
 import utils.Dado;
@@ -32,13 +32,13 @@ public class CPU {
 			registradores32 = new int[5];
 			tam = 32;
 			Main.tamInstrucao = 16;
-			Main.ponteiroBuffer = "0x000000";
+			Main.ponteiroBuffer = "0x00000000";
 			break;
 		case 64:
 			registradores64 = new long[5];
 			tam = 64;
 			Main.tamInstrucao = 32;
-			Main.ponteiroBuffer = "0x00000000";
+			Main.ponteiroBuffer = "0x0000000000000000";
 			break;
 		}
 

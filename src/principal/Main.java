@@ -3,8 +3,8 @@ package principal;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-import entradaesaida.Encoder;
-import entradaesaida.Parser;
+import entradaDeDados.Encoder;
+import entradaDeDados.Parser;
 import hardware.Barramento;
 import hardware.CPU;
 import hardware.EntradaESaida;
@@ -140,19 +140,19 @@ public class Main {
 				}
 
 			case 32:
-				if(ponteiroBuffer.equalsIgnoreCase("0x000000")) {
-					ponteiroBuffer = "0x000010"; //16 em hexa
-					return;
-				}else {
-					ponteiroBuffer = "0x000000";
-					return;
-				}
-			case 64:
 				if(ponteiroBuffer.equalsIgnoreCase("0x00000000")) {
-					ponteiroBuffer = "0x00000020";
+					ponteiroBuffer = "0x00000010"; //16 em hexa
 					return;
 				}else {
 					ponteiroBuffer = "0x00000000";
+					return;
+				}
+			case 64:
+				if(ponteiroBuffer.equalsIgnoreCase("0x0000000000000000")) {
+					ponteiroBuffer = "0x0000000000000020";
+					return;
+				}else {
+					ponteiroBuffer = "0x0000000000000000";
 					return;
 				}
 			} 

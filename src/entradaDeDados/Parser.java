@@ -1,4 +1,4 @@
-package entradaesaida;
+package entradaDeDados;
 
 import java.util.ArrayList;
 import java.util.regex.Matcher;
