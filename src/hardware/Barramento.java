@@ -1,9 +1,10 @@
-package principal;
+package hardware;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import utils.Constantes;
+import utils.Dado;
 import utils.Logger;
 
 public class Barramento {

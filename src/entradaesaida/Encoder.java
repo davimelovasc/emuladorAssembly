@@ -1,10 +1,9 @@
-package principal;
+package entradaesaida;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
-import javax.swing.plaf.synth.SynthSeparatorUI;
-
+import principal.Main;
 import utils.Constantes;
 import utils.Helper;
 import utils.Validate;
@@ -32,7 +31,12 @@ public class Encoder {
 		
 
 		if (instrucoes.size() > 2) {
-			op2 = Constantes.getKey(instrucoes.get(2));
+			if(Helper.validarEndereco(instrucoes.get(2))) {
+				op2 = Helper.formatarEndereco(instrucoes.get(2));
+			} else {
+				op2 = Constantes.getKey(instrucoes.get(2));
+			}
+			
 
 		}
 
@@ -82,6 +86,7 @@ public class Encoder {
 			
 			if (op2 != 0) {
 				aux = toFourByteArray(op2);
+				Helper.printArrayByte(aux);
 				resposta = Helper.concatTwoArray(aux, resposta);
 			} else {
 				aux = toFourByteArray((int) 0);
@@ -157,7 +162,9 @@ public class Encoder {
 	}
 
 	public static byte[] toFourByteArray(int value) {
-		return new byte[] { (byte) (value >> 24), (byte) (value >> 16), (byte) (value >> 8), (byte) value };
+		ByteBuffer buffer = ByteBuffer.allocate(4);
+	    buffer.putInt(value);
+	    return buffer.array();
 	}
 
 	public static byte[] toEightByteArray(long value) {

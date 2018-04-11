@@ -5,8 +5,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import principal.Main;
-import principal.Parser;
+import entradaesaida.Parser;
 
 public class ReadFile {
 	

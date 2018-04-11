@@ -1,10 +1,12 @@
-package principal;
+package hardware;
 
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
 import java.util.Arrays;
 
+import entradaesaida.Encoder;
+import principal.Main;
 import utils.Constantes;
+import utils.Dado;
 import utils.Helper;
 import utils.Logger;
 import utils.Validate;
@@ -43,137 +45,9 @@ public class CPU {
 	}
 
 
-
-
-
-	/*public void executarInstrucao(ArrayList<String> tokens) {
-		switch(tokens.get(0)) {
-		case "mov":
-			if(Validate.isRegistrador(tokens.get(1))) {
-				switch (tokens.get(1)) {
-				case "A":
-					if(Validate.isEndRam(tokens.get(2))) { //tokens(2) é end de ram
-
-						barramento.send(Constantes.CPU, Constantes.RAM, new Dado(Constantes.KEY_LER, new byte[Main.cpu.tam/8], tokens.get(2) ));
-
-						byte[] b = Main.ram.recive();
-
-						if(tam == 16) {
-							short x = fromTwoByteArray(b);
-							registradores16[0] = (short) x;
-						} else if(tam == 32) {
-							int x = fromFourByteArray(b);
-							registradores32[0] = Integer.valueOf(x);
-						} else if(tam == 64) {
-							long x = fromEightByteArray(b);
-							registradores64[0] = Long.valueOf(x);
-						}
-
-
-
-					} else { //tokens(2) é um numero
-						if(tam == 16)
-							registradores16[0] = Short.valueOf(tokens.get(2));
-						else if(tam == 32)
-							registradores32[0] = Integer.valueOf(tokens.get(2));
-						else if(tam == 64)
-							registradores64[0] = Long.valueOf(tokens.get(2));
-					}
-					break;
-				case "B":
-					if(Validate.isEndRam(tokens.get(2))) { //tokens(2) é end de ram
-
-						barramento.send(Constantes.CPU, Constantes.RAM, new Dado(Constantes.KEY_LER, new byte[1], tokens.get(2) ));
-						byte[] b = Main.ram.recive();
-						int x = (int) b[0];
-
-						if(tam == 16)
-							registradores16[1] = (short) x;
-						else if(tam == 32)
-							registradores32[1] = Integer.valueOf(x);
-						else if(tam == 64)
-							registradores64[1] = Long.valueOf(x);
-
-					} else { //tokens(2) é um numero
-						if(tam == 16)
-							registradores16[1] = Short.valueOf(tokens.get(2));
-						else if(tam == 32)
-							registradores32[1] = Integer.valueOf(tokens.get(2));
-						else if(tam == 64)
-							registradores64[1] = Integer.valueOf(tokens.get(2));
-					}
-					break;
-				case "C":
-					if(Validate.isEndRam(tokens.get(2))) { //tokens(2) é end de ram
-						barramento.send(Constantes.CPU, Constantes.RAM, new Dado(Constantes.KEY_LER, new byte[1], tokens.get(2) ));
-						byte[] b = Main.ram.recive();
-						int x = (int) b[0];
-
-						if(tam == 16)
-							registradores16[2] = (short) x;
-						else if(tam == 32)
-							registradores32[2] = Integer.valueOf(x);
-						else if(tam == 64)
-							registradores64[2] = Long.valueOf(x);
-					} else { //tokens(2) é um numero
-						if(tam == 16)
-							registradores16[2] = Short.valueOf(tokens.get(2));
-						else if(tam == 32)
-							registradores32[2] = Integer.valueOf(tokens.get(2));
-						else if(tam == 64)
-							registradores64[2] = Integer.valueOf(tokens.get(2));
-					}
-					break;
-				case "D":
-					if(Validate.isEndRam(tokens.get(2))) { //tokens(2) é end de ram
-						barramento.send(Constantes.CPU, Constantes.RAM, new Dado(Constantes.KEY_LER, new byte[1], tokens.get(2) ));
-						byte[] b = Main.ram.recive();
-						int x = (int) b[0];
-
-						if(tam == 16)
-							registradores16[3] = (short) x;
-						else if(tam == 32)
-							registradores32[3] = Integer.valueOf(x);
-						else if(tam == 64)
-							registradores64[3] = Long.valueOf(x);
-					} else { //tokens(2) é um numero
-						if(tam == 16)
-							registradores16[3] = Short.valueOf(tokens.get(2));
-						else if(tam == 32)
-							registradores32[3] = Integer.valueOf(tokens.get(2));
-						else if(tam == 64)
-							registradores64[3] = Integer.valueOf(tokens.get(2));
-					}
-					break;
-				default:
-					break;
-				}
-			} else { //tokens(1) nao é um registrador, é um end de ram
-
-			}
-
-			break;
-		case "add":
-
-			break;
-		case "inc":
-
-			break;
-		case "imul":
-
-			break;
-		}
-
-
-	}*/
-
-
 	public long[] getRegistradores64() {
 		return registradores64;
 	}
-
-
-
 
 
 	public void setRegistradores64(long[] registradores64) {
@@ -211,9 +85,6 @@ public class CPU {
 	public void setRegistradores16(short[] registradores16) {
 		this.registradores16 = registradores16;
 	}
-
-
-
 
 
 	public void recive() {
@@ -270,8 +141,7 @@ public class CPU {
 
 
 
-
-				executarInstrucoes(inst); //tira os espacos vazios
+				executarInstrucoes(inst);
 
 
 				break;
@@ -312,6 +182,7 @@ public class CPU {
 				inst[2] = op2_int;
 				inst[3] = op3_int;
 
+		
 				executarInstrucoes(inst);
 
 
@@ -354,6 +225,7 @@ public class CPU {
 				inst[1] = (int) op1_long;
 				inst[2] = (int) op2_long;
 				inst[3] = (int) op3_long;
+
 
 				executarInstrucoes(inst);
 
@@ -410,6 +282,8 @@ public class CPU {
 	public void setBarramento(Barramento barramento) {
 		this.barramento = barramento;
 	}
+
+	//DECODER
 
 	public static short fromTwoByteArray(byte[] bytes) {
 		ByteBuffer wrapped = ByteBuffer.wrap(bytes);
@@ -475,45 +349,59 @@ public class CPU {
 
 		Helper.removerInstrucaoRam();
 		Logger.printFeedBack();
+
 	}
 
 	public void execImul(int...a) {
-		if(a[1] < 0) { //a[1]e a[2] são registradores
-			
-			int x = Constantes.NumRegOnVetor(a[1]);
-			int y = Constantes.NumRegOnVetor(a[2]);
-			
-			if(a[3] < 0) { //a[3] é registrador
 
-				int z = Constantes.NumRegOnVetor(a[3]);
+		if(a[1] < 0) { //a[1] é registrador
 
+			if(a[2] >= 0) { //a[2] é end. ram e [3] é numero
+				barramento.send(Constantes.CPU, Constantes.RAM, new Dado(Constantes.KEY_LER, new byte[Main.cpu.tam/8], Integer.toString(a[2]), true));
+				byte[] b = Main.ram.recive();
+				int x = Constantes.NumRegOnVetor(a[1]);
 				if(tam == 16) {
-					registradores16[x] = (short) (registradores16[y] * registradores16[z]);
+					registradores16[x] = (short) (fromTwoByteArray(b) * a[3]);
 				} else if(tam == 32) {
-					System.out.println("regs.: b" +registradores32[y] );
-					System.out.println("regs.: c" +registradores32[z] );
-					registradores32[x] = registradores32[y] * registradores32[z];
+					registradores32[x] = fromFourByteArray(b) * a[3];
+
 				} else if(tam == 64) {
-					registradores64[x] = registradores64[y] * registradores64[z];
+					registradores64[x] = (long) (fromEightByteArray(b) * a[3]);
 				}
-			} else { //a[3] é numero
-				
-				if(tam == 16) {
-					registradores16[x] = (short) (registradores16[y] * a[3]);
-				} else if(tam == 32) {
-					registradores32[x] = registradores32[y] * a[3];
-				} else if(tam == 64) {
-					registradores64[x] = registradores64[y] * a[3];
+			}else { //[2] é registrador
+
+				int x = Constantes.NumRegOnVetor(a[1]);
+				int y = Constantes.NumRegOnVetor(a[2]);
+
+				if(a[3] < 0) { //a[3] é registrador
+
+					int z = Constantes.NumRegOnVetor(a[3]);
+
+					if(tam == 16) {
+						registradores16[x] = (short) (registradores16[y] * registradores16[z]);
+					} else if(tam == 32) {
+						registradores32[x] = registradores32[y] * registradores32[z];
+					} else if(tam == 64) {
+						registradores64[x] = registradores64[y] * registradores64[z];
+					}
+				} else { //a[3] é numero
+
+					if(tam == 16) {
+						registradores16[x] = (short) (registradores16[y] * a[3]);
+					} else if(tam == 32) {
+						registradores32[x] = registradores32[y] * a[3];
+					} else if(tam == 64) {
+						registradores64[x] = registradores64[y] * a[3];
+					}
+
 				}
-				
 			}
 		} else { //a[1] é end., a[2] é numero
-			if(a[3] > 0) { //a[3] é numero
+			if(a[3] >= 0) { //a[3] é numero
 				byte[] b = null;
 				if(tam == 16) {
 					short s = (short) (a[2] * a[3]);
 					b = Encoder.toByteArray(s);
-					
 				} else if(tam == 32) {
 					int i = a[2] * a[3];
 					b = Encoder.toByteArray(i);
@@ -521,17 +409,17 @@ public class CPU {
 					long l = a[2] * a[3];
 					b = Encoder.toByteArray(l);
 				}
-				
+
 				Main.barramento.send(Constantes.CPU, Constantes.RAM, new Dado(Constantes.KEY_ESCREVER, b, Integer.toString(a[1]), true));
 				Main.ram.recive();
-				
+
 			} else { //a[3] é registrador
 				int z = Constantes.NumRegOnVetor(a[3]);
 				byte[] b = null;
 				if(tam == 16) {
 					short s = (short) (a[2] * registradores16[z]);
 					b = Encoder.toByteArray(s);
-					
+
 				} else if(tam == 32) {
 					int i = a[2] * registradores32[z];
 					b = Encoder.toByteArray(i);
@@ -539,7 +427,7 @@ public class CPU {
 					long l = a[2] * registradores64[z];
 					b = Encoder.toByteArray(l);
 				}
-				
+
 				Main.barramento.send(Constantes.CPU, Constantes.RAM, new Dado(Constantes.KEY_ESCREVER, b, Integer.toString(a[1]), true));
 				Main.ram.recive();
 			}
@@ -573,36 +461,50 @@ public class CPU {
 		}else { //a[1] é end. ram
 
 			if(Validate.isRegistrador(Integer.toString(a[2]))) {//a[2] é registrador
-				int x = Constantes.NumRegOnVetor(a[1]);
-				long z;
-				byte[] b = null;
+
+				Main.barramento.send(Constantes.CPU, Constantes.RAM, new Dado(Constantes.KEY_LER, new byte[Main.cpu.tam/8], Integer.toString(a[1]), true ));
+				byte b[] = Main.ram.recive();
+				int x = Constantes.NumRegOnVetor(a[2]);
+				byte[] result = null;
+
 				if(tam == 16) {
-					z = registradores16[x];
-					b = Encoder.toByteArray((byte) z);
+					short s = fromTwoByteArray(b);
+					short res = (short) (s + registradores16[x]);
+					result = Encoder.toByteArray(res);
 				} else if(tam == 32) {
-					z = registradores32[x];
-					b = Encoder.toByteArray((int) z);
+					int i = fromFourByteArray(b);
+					int res = i + registradores32[x];
+					result = Encoder.toByteArray(res);
 				} else if(tam == 64) {
-					z = registradores64[x];
-					b = Encoder.toByteArray(z);
+					long l = fromEightByteArray(b);
+					long res = l + registradores64[x];
+					result = Encoder.toByteArray(res);
 				}
 
-				Main.barramento.send(Constantes.CPU, Constantes.RAM, new Dado(Constantes.KEY_ATUALIZAR, b, Integer.toString(a[1]), true )); //verificar
+				Main.barramento.send(Constantes.CPU, Constantes.RAM, new Dado(Constantes.KEY_ESCREVER, result, Integer.toString(a[1]), true ));
 				Main.ram.recive();
+
 			} else { //a[2] é numero
-				byte[] b = null;
+
+				Main.barramento.send(Constantes.CPU, Constantes.RAM, new Dado(Constantes.KEY_LER, new byte[Main.cpu.tam/8], Integer.toString(a[1]), true ));
+				byte b[] = Main.ram.recive();
+				byte[] result = null;
+
 				if(tam == 16) {
-					b = Encoder.toByteArray((short) a[2]);
-
+					short s = fromTwoByteArray(b);
+					short res = (short) (s + a[2]);
+					result = Encoder.toByteArray(res);
 				} else if(tam == 32) {
-					b = Encoder.toByteArray(a[2]);
-
+					int i = fromFourByteArray(b);
+					int res = i + a[2];
+					result = Encoder.toByteArray(res);
 				} else if(tam == 64) {
-
-					b = Encoder.toByteArray((long) a[2]);
+					long l = fromEightByteArray(b);
+					long res = (long) (l + a[2]);
+					result = Encoder.toByteArray(res);
 				}
 
-				Main.barramento.send(Constantes.CPU, Constantes.RAM, new Dado(Constantes.KEY_ATUALIZAR, b, Integer.toString(a[1]), true )); //verificar
+				Main.barramento.send(Constantes.CPU, Constantes.RAM, new Dado(Constantes.KEY_ESCREVER, result, Integer.toString(a[1]), true ));
 				Main.ram.recive();
 			}
 
@@ -625,9 +527,26 @@ public class CPU {
 			}
 
 		} else { //a[1] é end. de ram
-			byte[] b  = {1};
-			barramento.send(Constantes.CPU, Constantes.RAM, new Dado(Constantes.KEY_ATUALIZAR, b, Integer.toString(a[1]), true));
+			Main.barramento.send(Constantes.CPU, Constantes.RAM, new Dado(Constantes.KEY_LER, new byte[Main.cpu.tam/8], Integer.toString(a[1]), true ));
+			byte b[] = Main.ram.recive();
+			byte[] result = null;
+			if(tam == 16) {
+				short s = fromTwoByteArray(b);
+				short res = (short) (s + 1);
+				result = Encoder.toByteArray(res);
+			} else if(tam == 32) {
+				int i = fromFourByteArray(b);
+				int res = i + 1;
+				result = Encoder.toByteArray(res);
+			} else if(tam == 64) {
+				long l = fromEightByteArray(b);
+				long res =(long) (l + 1);
+				result = Encoder.toByteArray(res);
+			}
+
+			Main.barramento.send(Constantes.CPU, Constantes.RAM, new Dado(Constantes.KEY_ESCREVER, result, Integer.toString(a[1]), true ));
 			Main.ram.recive();
+
 		}
 
 	}
@@ -635,14 +554,32 @@ public class CPU {
 	public void execMov(int... a) {
 		if(Validate.isRegistrador(Integer.toString(a[1]))) { //a[1] é registrador
 			int x = Constantes.NumRegOnVetor(a[1]);
-			if(! Validate.isRegistrador(Integer.toString(a[2]))) { //a[2] é numero
-				if(tam == 16) {
-					registradores16[x] = (short) a[2];
-				}else if(tam == 32) {
-					registradores32[x] = (int) a[2];
-				} else if(tam == 64) {
-					registradores64[x] = (long) a[2];
+			if(! Validate.isRegistrador(Integer.toString(a[2]))) { //a[2] é numero ou end
+				
+				if(a[3] == 1) { //a[2] é end. ram
+					Main.barramento.send(Constantes.CPU, Constantes.RAM, new Dado(Constantes.KEY_LER, new byte[Main.cpu.tam/8], Integer.toString(a[2]), true ));
+					byte[] r = Main.ram.recive();
+					
+					if(tam == 16) {
+						registradores16[x] = fromTwoByteArray(r);
+					}else if(tam == 32) {
+						registradores32[x] = fromFourByteArray(r);
+					} else if(tam == 64) {
+						registradores64[x] = fromEightByteArray(r);
+					}
+					
+				
+				}else { //a[2] é numero
+					
+					if(tam == 16) {
+						registradores16[x] = (short) a[2];
+					}else if(tam == 32) {
+						registradores32[x] = (int) a[2];
+					} else if(tam == 64) {
+						registradores64[x] = (long) a[2];
+					}
 				}
+				
 			} else { //a[2] for um registrador
 				int y = Constantes.NumRegOnVetor(a[2]);
 				if(tam == 16) {
@@ -671,8 +608,16 @@ public class CPU {
 				}
 
 			} else { //a[2] é numero
-				byte[] num = Encoder.toByteArray(a[2]);
-				Main.barramento.send(Constantes.CPU, Constantes.RAM, new Dado(Constantes.KEY_ESCREVER, num, Integer.toString(a[1])));
+				byte[] num = null;
+				if(Main.cpu.tam == 16) {
+					num = Encoder.toByteArray((short) a[2]);
+				}else if(Main.cpu.tam == 32) {
+					num = Encoder.toByteArray((int) a[2]);
+				}else if(Main.cpu.tam == 64) {
+					num = Encoder.toByteArray((long) a[2]);
+				}
+
+				Main.barramento.send(Constantes.CPU, Constantes.RAM, new Dado(Constantes.KEY_ESCREVER, num, Integer.toString(a[1]), true));
 				Main.ram.recive();
 			}
 		}

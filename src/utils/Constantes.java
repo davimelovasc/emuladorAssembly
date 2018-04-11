@@ -1,7 +1,5 @@
 package utils;
 
-import principal.Main;
-
 public class Constantes {
 	
 	public static final String MOD_ENTRADA_E_SAIDA = "Modulo de Entrada e Saída";
@@ -24,8 +22,7 @@ public class Constantes {
 	
 	
 	public static final String KEY_LER = "ler"; 
-	public static final String KEY_ESCREVER = "escrever"; 
-	public static final String KEY_ATUALIZAR = "atualizar";
+	public static final String KEY_ESCREVER = "escrever"; //escreve a partir de um end. de memoria
 	public static final String KEY_INTERCEPTOR = "interceptor";
 	
 	

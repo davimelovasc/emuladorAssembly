@@ -1,10 +1,9 @@
 package utils;
 
-import principal.Barramento;
-import principal.CPU;
-import principal.EntradaESaida;
-import principal.Main;
-import principal.Ram;
+import hardware.Barramento;
+import hardware.CPU;
+import hardware.EntradaESaida;
+import hardware.Ram;
 
 public class Validate {
 
@@ -12,12 +11,13 @@ public class Validate {
 		if(! a.toLowerCase().equals("mov"))
 			return false;
 
-		if(! isRegistrador(b) && ! isEndRam(b))
-			return false;
-		
-		if(! isInteger(c) && ! isRegistrador(c))
-			return false;
 
+		if(! isRegistrador(b) && ! isEndRam(b)) {
+			return false;
+		}
+		
+		if(! isInteger(c) && ! isRegistrador(c) && ! isEndRam(c))
+			return false;
 		
 		return true;
 	}
@@ -67,9 +67,7 @@ public class Validate {
 		if(Helper.validarEndereco(s))
 			return true;
 		else 
-			Logger.printError(Validate.class.getName(), "Endereço de memoria inválido");
-			
-		return false;
+			return false;
 		
 
 	}
@@ -108,14 +106,17 @@ public class Validate {
 		return true;
 	}
 	
-	public static boolean validarEnd(String endereco) {
-		//getRam
-		
-		return true;
-	}
-	
 	public static boolean validarEmu(CPU cpu, Ram ram, EntradaESaida es, Barramento barramento) {
 		
+		if(Math.pow(2, barramento.getTamanho()) < ram.getCelulas().length) {
+			System.out.println("Barramento pequeno demais para a quantidade de ram");
+			return false;
+		}
+										//Memoria reservada para instrucoes
+		if(ram.getCelulas().length <= ((cpu.getTam()/8)*4)*2) {
+			System.out.println("Mémoria ram informada pequena demais para o tamanho da palavra");
+			return false;
+		}
 		
 		
 		//TODO validar emulador

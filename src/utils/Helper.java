@@ -108,7 +108,7 @@ public class Helper {
 
 	public static int formatarEndereco(String endereco) { // retorna a string correspondente ao hexadecimal
 		endereco = endereco.trim();
-		if(endereco.contains("x")) {
+		if(endereco.contains("x") || endereco.contains("X")) {
 			endereco = endereco.substring(2); // ex.: entrada: 0x00F2 sa�da: 00F2
 			return hexaToDec(endereco);
 		}
@@ -192,6 +192,7 @@ public class Helper {
 			} else if(endereco.length() == 8) {
 				return true;
 			}
+
 			return false;
 
 		default:

@@ -1,6 +1,8 @@
-package principal;
+package hardware;
 
+import principal.Main;
 import utils.Constantes;
+import utils.Dado;
 import utils.Helper;
 import utils.Logger;
 
@@ -54,7 +56,7 @@ public class Ram {
 		}else {
 			endereco = Helper.formatarEndereco(d.getEndereco());
 		}
-
+		
 		if(controle.equals(Constantes.KEY_ESCREVER)) {
 
 			if(this.getCelulas().length > dados.length) {
@@ -62,7 +64,7 @@ public class Ram {
 					this.ram[endereco+i] = dados[i];
 				}
 			}else {
-				Logger.printError(getClass().getName(), "Tamanho da ram muito pequena para armazenar duas palavras na ram");
+				Logger.printError(getClass().getName(), "Tamanho da ram muito pequena para armazenar palavras na ram");
 			}
 
 
@@ -75,17 +77,7 @@ public class Ram {
 			return dados;
 
 
-		} else if(controle.equals(Constantes.KEY_ATUALIZAR)){
-			if(Main.cpu.getTam() == 16) {
-				this.ram[endereco] += CPU.fromTwoByteArray(dados);
-			}else if (Main.cpu.getTam() == 32) {
-				this.ram[endereco] += CPU.fromFourByteArray(dados);
-			}else if(Main.cpu.getTam() == 64) {
-				this.ram[endereco] += CPU.fromEightByteArray(dados);
-			}
-
-
-		} else {
+		}else {
 			//erro
 		}
 		return null;

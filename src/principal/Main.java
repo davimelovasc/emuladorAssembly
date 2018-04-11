@@ -3,7 +3,14 @@ package principal;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import entradaesaida.Encoder;
+import entradaesaida.Parser;
+import hardware.Barramento;
+import hardware.CPU;
+import hardware.EntradaESaida;
+import hardware.Ram;
 import utils.Constantes;
+import utils.Dado;
 import utils.Helper;
 import utils.Logger;
 import utils.ReadFile;
@@ -16,7 +23,7 @@ public class Main {
 	static public EntradaESaida entradaESaida;
 	static public Barramento barramento;
 	static public int tamInstrucao;
-	static public String ponteiroBuffer;
+	static public String ponteiroBuffer; //de onde sera lida a proxima instrucao na ram
 
 	public static void main(String[] args) {
 
@@ -40,14 +47,9 @@ public class Main {
 				linha = linhas.get(l);
 
 				ArrayList<String> tokens =  Parser.parse(linha); //le a linha, faz as validacoes e retorna as tokens
+				System.out.println("comecando o encode");
 				instrucoesEmByte = Encoder.encode(tokens); //transforma as tokens da linha em byte[]
-								
-				/*System.out.println("INSTRUÇÕES EM BYTES: ");
-				Helper.printArrayByte(instrucoesEmByte);
-				System.out.println("FIM");*/
-				
-				
-				
+				System.out.println("encode finalizado");		
 				if(entradaESaida.addToBuffer(instrucoesEmByte)) { //tokens em byte sao adicionadas ao buffer (se tiver espaco)
 					System.out.println("\nInstrução \"" + linha + "\"(em bytes) adicionada ao buffer de E/S\n");
 					aux++;
@@ -56,17 +58,15 @@ public class Main {
 					break;
 			}
 			
-			//Buffer com 2 instrucoes
-			
+			//Buffer com 1 ou 2 instrucoes
 
 			barramento.send(Constantes.MOD_ENTRADA_E_SAIDA, Constantes.RAM, new Dado(Constantes.KEY_ESCREVER, entradaESaida.getBuffer(), ponteiroBuffer, false));
 			ram.recive(); //executa a escrita das inst. na ram
-			/*System.out.println("\nInstrução(ões) do buffer foi(ram) escrita(s) na RAM\n");*/
-			
-			// 2 instruçoes salvas na ram
+			System.out.println("\nDados do buffer de E/S enviados para a RAM\n");
+			//Instrução(ões) salvas na ram
 			
 			if(l == 2 || l == 1) {	
-			Logger.printFeedBack();
+				Logger.printFeedBack();
 			}
 
 			while(aux != 0 ) {
@@ -76,19 +76,15 @@ public class Main {
 				cpu.recive(); //aqui dentro a cpu manda pedindo os dados da ram
 
 				byte[] res = ram.recive(); //se for leitura retorna dados lidos;
-				System.out.println("\nInstruções em byte indo pra cpu: ");
+				System.out.println("\nInstruções em byte indo para a cpu: ");
 				Helper.printArrayByte(res);
 
 				barramento.send(Constantes.RAM, Constantes.CPU, new Dado(Constantes.RESPOSTA, res, null)); //ram retorna os dados que a cpu pediu
 				Main.cpu.recive(); //executa a instrucao
 
 
-
 				ponteiroBufferNext();
 				
-				System.out.println("PONTEIRO RAM: " + ponteiroBuffer); //de onde sera lida a proxima instrucao na ram
-
-
 				aux--;
 			}
 
@@ -104,15 +100,15 @@ public class Main {
 		Scanner s = new Scanner(System.in);
 
 		System.out.println("Informe o tamanho do barramento: ");
-		barramento = new Barramento(s.nextInt()); //
+		barramento = new Barramento(s.nextInt());
 
 		System.out.println("Informe o tamanho da CPU: ");
 		cpu = new CPU(s.nextInt());
 
 		System.out.println("Informe o tamanho da RAM: ");
 		ram = new Ram(s.nextInt());
-
-		System.out.println("Informe o tamanho do Buffer de entrada e saída: ");
+/*
+		System.out.println("Informe o tamanho do Buffer de entrada e saída: ");*/
 		entradaESaida = new EntradaESaida();
 
 		cpu.setBarramento(barramento);
@@ -123,12 +119,10 @@ public class Main {
 			s.close();
 			return;
 		}else {
-			s.close();
-			Logger.printError(Main.class.getName(), "Configurações do emulador inválidas!");
 			startEmu();
 		}
 		
-		
+		s.close();
 
 
 	}

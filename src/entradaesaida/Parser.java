@@ -1,11 +1,10 @@
-package principal;
+package entradaesaida;
 
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import utils.Logger;
-import utils.ReadFile;
 import utils.Validate;
 
 public class Parser {
@@ -48,11 +47,15 @@ public static ArrayList<String> parse(String entrada) {
 			case "MOV":
 				
 				if(Validate.validateMov(m.group(1), m.group(2), m.group(3))){
-			        //VALIDAR LOGICAS DA ARQUITETURA E CHAMAR O ENCODER PARA TRANSFORMAR AS INFORMA��ES EM BYTES[] PARA IR AO BUFFER E/S
+					
 					
 					tokens.add(m.group(1));
 					tokens.add(m.group(2));
 					tokens.add(m.group(3));
+					
+					if(m.group(3).contains("x") || m.group(3).contains("X")) {
+						tokens.add("1"); //identificador para saber que o 2 operando é ram ao inves de numero
+					}
 
 				
 					
@@ -60,7 +63,7 @@ public static ArrayList<String> parse(String entrada) {
 				}
 				
 				
-				return null;
+				Logger.printError(Parser.class.getName(), "Erro ao realizar o Parser de alguma instrucao");
 				
 			case "ADD":
 				if(Validate.validateAdd(m.group(1), m.group(2), m.group(3))) {
@@ -72,7 +75,7 @@ public static ArrayList<String> parse(String entrada) {
 					return tokens;
 				}
 				
-				return null;
+				Logger.printError(Parser.class.getName(), "Erro ao realizar o Parser de alguma instrucao");
 				
 			case "INC":
 
@@ -84,7 +87,7 @@ public static ArrayList<String> parse(String entrada) {
 				    return tokens;
 				}
 					
-				return null;
+				Logger.printError(Parser.class.getName(), "Erro ao realizar o Parser de alguma instrucao");
 
 			
 			case "IMUL":
@@ -100,7 +103,7 @@ public static ArrayList<String> parse(String entrada) {
 				}
 			default:
 				
-				return null;
+				Logger.printError(Parser.class.getName(), "Erro ao realizar o Parser de alguma instrucao");
 			}
 
 		} else {

@@ -1,5 +1,6 @@
-package principal;
+package hardware;
 
+import principal.Main;
 import utils.Helper;
 
 public class EntradaESaida {
