@@ -6,7 +6,6 @@ import java.util.Arrays;
 import entradaDeDados.Encoder;
 import principal.Main;
 import utils.Constantes;
-import utils.Dado;
 import utils.Helper;
 import utils.Logger;
 import utils.Validate;
@@ -17,7 +16,10 @@ public class CPU {
 	private int[] registradores32;
 	private short[] registradores16;
 	private int tam;
-	private Barramento barramento;
+	//private Barramento barramento;
+	private ControlBus controlBus;
+	private DataBus dataBus;
+	private AddressBus addressBus;;
 
 	public CPU(int tam_palavra) {
 		switch(tam_palavra) {
@@ -88,8 +90,12 @@ public class CPU {
 
 
 	public void recive() {
-		Dado d = barramento.reciveCPU();
-		byte[] dados = d.getDados();
+		String controle = controlBus.reciveCPU();
+		byte[] d = dataBus.reciveCPU();
+		String endereco = addressBus.reciveCPU();
+		
+		//Dado d = barramento.reciveCPU();
+		byte[] dados = d;
 		byte[] acao = null;
 		byte[] op1 = null;
 		byte[] op2 = null;
@@ -97,7 +103,7 @@ public class CPU {
 
 
 
-		if(d.getControle().equals(Constantes.RESPOSTA)) {
+		if(controle.equals(Constantes.RESPOSTA)) {
 
 			//DECODIFICAÇÃO
 
@@ -234,10 +240,10 @@ public class CPU {
 			default:
 
 			}
-		} else if(d.getControle().equals(Constantes.KEY_INTERCEPTOR)) {
+		} else if(controle.equals(Constantes.KEY_INTERCEPTOR)) {
 
-			String endereco = d.getEndereco();
-			int tamInstrucao = d.getDados().length;
+			
+			int tamInstrucao = d.length;
 			int enderecoFormatado = Helper.formatarEndereco(endereco);
 
 
@@ -245,20 +251,25 @@ public class CPU {
 			case 16:
 				registradores16[4] = (short) enderecoFormatado; //PI é atualizado
 				System.out.println("\nRegistrador PI atualizado!\nPI: "+ registradores16[4]);
-				barramento.send(Constantes.CPU, Constantes.RAM, new Dado(Constantes.KEY_LER, new byte[tamInstrucao], endereco, false));
+				//barramento.send(Constantes.CPU, Constantes.RAM, new Dado(Constantes.KEY_LER, new byte[tamInstrucao], endereco, false));
+				
 				break;
 
 			case 32:
 				registradores32[4] = enderecoFormatado; //PI é atualizado
 				System.out.println("\nRegistrador PI atualizado!\nPI: "+ registradores32[4]);
-				barramento.send(Constantes.CPU, Constantes.RAM, new Dado(Constantes.KEY_LER, new byte[tamInstrucao], endereco, false));
+				//barramento.send(Constantes.CPU, Constantes.RAM, new Dado(Constantes.KEY_LER, new byte[tamInstrucao], endereco, false));
 				break;
 			case 64:
 				registradores64[4] = enderecoFormatado; //PI é atualizado
 				System.out.println("\nRegistrador PI atualizado!\nPI: "+ registradores64[4]);
-				barramento.send(Constantes.CPU, Constantes.RAM, new Dado(Constantes.KEY_LER, new byte[tamInstrucao], endereco, false));
+				//barramento.send(Constantes.CPU, Constantes.RAM, new Dado(Constantes.KEY_LER, new byte[tamInstrucao], endereco, false));
 				break;
 			}
+			
+			controlBus.send(Constantes.CPU, Constantes.RAM, Constantes.KEY_LER);
+			dataBus.send(Constantes.CPU, Constantes.RAM, new byte[tamInstrucao]);
+			addressBus.send(Constantes.CPU, Constantes.RAM, endereco, false);
 
 
 
@@ -275,13 +286,13 @@ public class CPU {
 		this.tam = tam;
 	}
 
-	public Barramento getBarramento() {
+/*	public Barramento getBarramento() {
 		return barramento;
 	}
 
 	public void setBarramento(Barramento barramento) {
 		this.barramento = barramento;
-	}
+	}*/
 
 	//DECODER
 
@@ -357,7 +368,13 @@ public class CPU {
 		if(a[1] < 0) { //a[1] é registrador
 
 			if(a[2] >= 0) { //a[2] é end. ram e [3] é numero
-				barramento.send(Constantes.CPU, Constantes.RAM, new Dado(Constantes.KEY_LER, new byte[Main.cpu.tam/8], Integer.toString(a[2]), true));
+				//barramento.send(Constantes.CPU, Constantes.RAM, new Dado(Constantes.KEY_LER, new byte[Main.cpu.tam/8], Integer.toString(a[2]), true));
+				
+				controlBus.send(Constantes.CPU, Constantes.RAM, Constantes.KEY_LER);
+				dataBus.send(Constantes.CPU, Constantes.RAM, new byte[Main.cpu.tam/8]);
+				addressBus.send(Constantes.CPU, Constantes.RAM, Integer.toString(a[2]), true );
+				
+				
 				byte[] b = Main.ram.recive();
 				int x = Constantes.NumRegOnVetor(a[1]);
 				if(tam == 16) {
@@ -410,7 +427,12 @@ public class CPU {
 					b = Encoder.toByteArray(l);
 				}
 
-				Main.barramento.send(Constantes.CPU, Constantes.RAM, new Dado(Constantes.KEY_ESCREVER, b, Integer.toString(a[1]), true));
+				//Main.barramento.send(Constantes.CPU, Constantes.RAM, new Dado(Constantes.KEY_ESCREVER, b, Integer.toString(a[1]), true));
+				
+				controlBus.send(Constantes.CPU, Constantes.RAM, Constantes.KEY_ESCREVER);
+				dataBus.send(Constantes.CPU, Constantes.RAM, b);
+				addressBus.send(Constantes.CPU, Constantes.RAM, Integer.toString(a[1]), true );
+				
 				Main.ram.recive();
 
 			} else { //a[3] é registrador
@@ -428,7 +450,12 @@ public class CPU {
 					b = Encoder.toByteArray(l);
 				}
 
-				Main.barramento.send(Constantes.CPU, Constantes.RAM, new Dado(Constantes.KEY_ESCREVER, b, Integer.toString(a[1]), true));
+				//Main.barramento.send(Constantes.CPU, Constantes.RAM, new Dado(Constantes.KEY_ESCREVER, b, Integer.toString(a[1]), true));
+				
+				controlBus.send(Constantes.CPU, Constantes.RAM, Constantes.KEY_ESCREVER);
+				dataBus.send(Constantes.CPU, Constantes.RAM, b);
+				addressBus.send(Constantes.CPU, Constantes.RAM, Integer.toString(a[1]), true );
+				
 				Main.ram.recive();
 			}
 		}
@@ -462,7 +489,12 @@ public class CPU {
 
 			if(Validate.isRegistrador(Integer.toString(a[2]))) {//a[2] é registrador
 
-				Main.barramento.send(Constantes.CPU, Constantes.RAM, new Dado(Constantes.KEY_LER, new byte[Main.cpu.tam/8], Integer.toString(a[1]), true ));
+				//Main.barramento.send(Constantes.CPU, Constantes.RAM, new Dado(Constantes.KEY_LER, new byte[Main.cpu.tam/8], Integer.toString(a[1]), true ));
+				
+				controlBus.send(Constantes.CPU, Constantes.RAM, Constantes.KEY_LER);
+				dataBus.send(Constantes.CPU, Constantes.RAM, new byte[Main.cpu.tam/8]);
+				addressBus.send(Constantes.CPU, Constantes.RAM, Integer.toString(a[1]), true );
+				
 				byte b[] = Main.ram.recive();
 				int x = Constantes.NumRegOnVetor(a[2]);
 				byte[] result = null;
@@ -481,12 +513,22 @@ public class CPU {
 					result = Encoder.toByteArray(res);
 				}
 
-				Main.barramento.send(Constantes.CPU, Constantes.RAM, new Dado(Constantes.KEY_ESCREVER, result, Integer.toString(a[1]), true ));
+				//Main.barramento.send(Constantes.CPU, Constantes.RAM, new Dado(Constantes.KEY_ESCREVER, result, Integer.toString(a[1]), true ));
+				
+				controlBus.send(Constantes.CPU, Constantes.RAM, Constantes.KEY_ESCREVER);
+				dataBus.send(Constantes.CPU, Constantes.RAM, result);
+				addressBus.send(Constantes.CPU, Constantes.RAM, Integer.toString(a[1]), true );
+				
 				Main.ram.recive();
 
 			} else { //a[2] é numero
 
-				Main.barramento.send(Constantes.CPU, Constantes.RAM, new Dado(Constantes.KEY_LER, new byte[Main.cpu.tam/8], Integer.toString(a[1]), true ));
+				//Main.barramento.send(Constantes.CPU, Constantes.RAM, new Dado(Constantes.KEY_LER, new byte[Main.cpu.tam/8], Integer.toString(a[1]), true ));
+				
+				controlBus.send(Constantes.CPU, Constantes.RAM, Constantes.KEY_LER);
+				dataBus.send(Constantes.CPU, Constantes.RAM, new byte[Main.cpu.tam/8]);
+				addressBus.send(Constantes.CPU, Constantes.RAM, Integer.toString(a[1]), true );
+				
 				byte b[] = Main.ram.recive();
 				byte[] result = null;
 
@@ -504,7 +546,12 @@ public class CPU {
 					result = Encoder.toByteArray(res);
 				}
 
-				Main.barramento.send(Constantes.CPU, Constantes.RAM, new Dado(Constantes.KEY_ESCREVER, result, Integer.toString(a[1]), true ));
+				//Main.barramento.send(Constantes.CPU, Constantes.RAM, new Dado(Constantes.KEY_ESCREVER, result, Integer.toString(a[1]), true ));
+				
+				controlBus.send(Constantes.CPU, Constantes.RAM, Constantes.KEY_ESCREVER);
+				dataBus.send(Constantes.CPU, Constantes.RAM, result);
+				addressBus.send(Constantes.CPU, Constantes.RAM, Integer.toString(a[1]), true );
+				
 				Main.ram.recive();
 			}
 
@@ -527,7 +574,12 @@ public class CPU {
 			}
 
 		} else { //a[1] é end. de ram
-			Main.barramento.send(Constantes.CPU, Constantes.RAM, new Dado(Constantes.KEY_LER, new byte[Main.cpu.tam/8], Integer.toString(a[1]), true ));
+			//Main.barramento.send(Constantes.CPU, Constantes.RAM, new Dado(Constantes.KEY_LER, new byte[Main.cpu.tam/8], Integer.toString(a[1]), true ));
+			
+			controlBus.send(Constantes.CPU, Constantes.RAM, Constantes.KEY_LER);
+			dataBus.send(Constantes.CPU, Constantes.RAM, new byte[Main.cpu.tam/8]);
+			addressBus.send(Constantes.CPU, Constantes.RAM, Integer.toString(a[1]), true );
+			
 			byte b[] = Main.ram.recive();
 			byte[] result = null;
 			if(tam == 16) {
@@ -544,7 +596,12 @@ public class CPU {
 				result = Encoder.toByteArray(res);
 			}
 
-			Main.barramento.send(Constantes.CPU, Constantes.RAM, new Dado(Constantes.KEY_ESCREVER, result, Integer.toString(a[1]), true ));
+			//Main.barramento.send(Constantes.CPU, Constantes.RAM, new Dado(Constantes.KEY_ESCREVER, result, Integer.toString(a[1]), true ));
+			
+			controlBus.send(Constantes.CPU, Constantes.RAM, Constantes.KEY_ESCREVER);
+			dataBus.send(Constantes.CPU, Constantes.RAM, result);
+			addressBus.send(Constantes.CPU, Constantes.RAM, Integer.toString(a[1]), true );
+			
 			Main.ram.recive();
 
 		}
@@ -557,7 +614,11 @@ public class CPU {
 			if(! Validate.isRegistrador(Integer.toString(a[2]))) { //a[2] é numero ou end
 				
 				if(a[3] == 1) { //a[2] é end. ram
-					Main.barramento.send(Constantes.CPU, Constantes.RAM, new Dado(Constantes.KEY_LER, new byte[Main.cpu.tam/8], Integer.toString(a[2]), true ));
+					//Main.barramento.send(Constantes.CPU, Constantes.RAM, new Dado(Constantes.KEY_LER, new byte[Main.cpu.tam/8], Integer.toString(a[2]), true ));
+					controlBus.send(Constantes.CPU, Constantes.RAM, Constantes.KEY_LER);
+					dataBus.send(Constantes.CPU, Constantes.RAM, new byte[Main.cpu.tam/8]);
+					addressBus.send(Constantes.CPU, Constantes.RAM, Integer.toString(a[2]), true);
+					
 					byte[] r = Main.ram.recive();
 					
 					if(tam == 16) {
@@ -593,19 +654,26 @@ public class CPU {
 		} else { //a[1] é end. ram
 			if(Validate.isRegistrador(Integer.toString(a[2]))) {//a[2] é registrador
 				int y = Constantes.NumRegOnVetor(a[2]);
+				byte[] b = null;
 				if(tam == 16) {
-					byte[] b = Encoder.toByteArray(registradores16[y]);
-					Main.barramento.send(Constantes.CPU, Constantes.RAM, new Dado(Constantes.KEY_ESCREVER, b, Integer.toString(a[1]), true));
-					Main.ram.recive(); //executa
+					b = Encoder.toByteArray(registradores16[y]);
+					//Main.barramento.send(Constantes.CPU, Constantes.RAM, new Dado(Constantes.KEY_ESCREVER, b, Integer.toString(a[1]), true));
+					//Main.ram.recive(); //executa
 				}else if(tam == 32) {
-					byte[] b = Encoder.toByteArray(registradores32[y]);
-					Main.barramento.send(Constantes.CPU, Constantes.RAM, new Dado(Constantes.KEY_ESCREVER, b, Integer.toString(a[1]), true));
-					Main.ram.recive(); //executa
+					b = Encoder.toByteArray(registradores32[y]);
+					//Main.barramento.send(Constantes.CPU, Constantes.RAM, new Dado(Constantes.KEY_ESCREVER, b, Integer.toString(a[1]), true));
+					//Main.ram.recive(); //executa
 				}else if(tam == 64) {
-					byte[] b = Encoder.toByteArray(registradores64[y]);
-					Main.barramento.send(Constantes.CPU, Constantes.RAM, new Dado(Constantes.KEY_ESCREVER, b, Integer.toString(a[1]), true));
-					Main.ram.recive(); //executa
+					b = Encoder.toByteArray(registradores64[y]);
+					//Main.barramento.send(Constantes.CPU, Constantes.RAM, new Dado(Constantes.KEY_ESCREVER, b, Integer.toString(a[1]), true));
+					//Main.ram.recive(); //executa
 				}
+				
+				controlBus.send(Constantes.CPU, Constantes.RAM, Constantes.KEY_ESCREVER);
+				dataBus.send(Constantes.CPU, Constantes.RAM, b);
+				addressBus.send(Constantes.CPU, Constantes.RAM, Integer.toString(a[1]), true);
+				
+				Main.ram.recive();  //executa
 
 			} else { //a[2] é numero
 				byte[] num = null;
@@ -617,12 +685,50 @@ public class CPU {
 					num = Encoder.toByteArray((long) a[2]);
 				}
 
-				Main.barramento.send(Constantes.CPU, Constantes.RAM, new Dado(Constantes.KEY_ESCREVER, num, Integer.toString(a[1]), true));
+				//Main.barramento.send(Constantes.CPU, Constantes.RAM, new Dado(Constantes.KEY_ESCREVER, num, Integer.toString(a[1]), true));
+				
+				controlBus.send(Constantes.CPU, Constantes.RAM, Constantes.KEY_ESCREVER);
+				dataBus.send(Constantes.CPU, Constantes.RAM, num);
+				addressBus.send(Constantes.CPU, Constantes.RAM, Integer.toString(a[1]), true);
+				
 				Main.ram.recive();
 			}
 		}
 
 	}
+
+
+	public ControlBus getControlBus() {
+		return controlBus;
+	}
+
+
+	public void setControlBus(ControlBus controlBus) {
+		this.controlBus = controlBus;
+	}
+
+
+	public DataBus getDataBus() {
+		return dataBus;
+	}
+
+
+	public void setDataBus(DataBus dataBus) {
+		this.dataBus = dataBus;
+	}
+
+
+	public AddressBus getAddressBus() {
+		return addressBus;
+	}
+
+
+	public void setAddressBus(AddressBus addressBus) {
+		this.addressBus = addressBus;
+	}
+
+
+
 
 
 }

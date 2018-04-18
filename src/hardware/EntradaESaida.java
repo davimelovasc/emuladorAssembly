@@ -6,7 +6,10 @@ import utils.Helper;
 public class EntradaESaida {
 
 	private byte[] buffer;
-	private Barramento barramento;
+	//private Barramento barramento;
+	private ControlBus controlBus;
+	private DataBus dataBus;
+	private AddressBus addressBus;
 
 	public EntradaESaida() {
 		buffer = new byte[Main.tamInstrucao]; //Buffer sempre tera o espaco de duas instrucoes
@@ -20,13 +23,13 @@ public class EntradaESaida {
 		this.buffer = buffer;
 	}
 
-	public Barramento getBarramento() {
+/*	public Barramento getBarramento() {
 		return barramento;
 	}
 
 	public void setBarramento(Barramento barramento) {
 		this.barramento = barramento;
-	}
+	}*/
 
 	public boolean addToBuffer(byte[] b) {
 		if(Helper.isVazio(buffer)) {
@@ -53,5 +56,28 @@ public class EntradaESaida {
 		return false;
 	}
 
+	public ControlBus getControlBus() {
+		return controlBus;
+	}
+
+	public void setControlBus(ControlBus controlBus) {
+		this.controlBus = controlBus;
+	}
+
+	public DataBus getDataBus() {
+		return dataBus;
+	}
+
+	public void setDataBus(DataBus dataBus) {
+		this.dataBus = dataBus;
+	}
+
+	public AddressBus getAddressBus() {
+		return addressBus;
+	}
+
+	public void setAddressBus(AddressBus addressBus) {
+		this.addressBus = addressBus;
+	}
 
 }

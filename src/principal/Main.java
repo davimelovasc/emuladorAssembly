@@ -5,12 +5,13 @@ import java.util.Scanner;
 
 import entradaDeDados.Encoder;
 import entradaDeDados.Parser;
-import hardware.Barramento;
+import hardware.AddressBus;
 import hardware.CPU;
+import hardware.ControlBus;
+import hardware.DataBus;
 import hardware.EntradaESaida;
 import hardware.Ram;
 import utils.Constantes;
-import utils.Dado;
 import utils.Helper;
 import utils.Logger;
 import utils.ReadFile;
@@ -21,9 +22,12 @@ public class Main {
 	static public Ram ram;
 	static public CPU cpu;
 	static public EntradaESaida entradaESaida;
-	static public Barramento barramento;
+	//static public Barramento barramento;
 	static public int tamInstrucao;
 	static public String ponteiroBuffer; //de onde sera lida a proxima instrucao na ram
+	static public ControlBus controlBus;
+	static public DataBus dataBus;
+	static public AddressBus addressBus;
 
 	public static void main(String[] args) {
 
@@ -60,7 +64,11 @@ public class Main {
 			
 			//Buffer com 1 ou 2 instrucoes
 
-			barramento.send(Constantes.MOD_ENTRADA_E_SAIDA, Constantes.RAM, new Dado(Constantes.KEY_ESCREVER, entradaESaida.getBuffer(), ponteiroBuffer, false));
+			//barramento.send(Constantes.MOD_ENTRADA_E_SAIDA, Constantes.RAM, new Dado(Constantes.KEY_ESCREVER, entradaESaida.getBuffer(), ponteiroBuffer, false));
+			controlBus.send(Constantes.MOD_ENTRADA_E_SAIDA, Constantes.RAM, Constantes.KEY_ESCREVER);
+			dataBus.send(Constantes.MOD_ENTRADA_E_SAIDA, Constantes.RAM, entradaESaida.getBuffer());
+			addressBus.send(Constantes.MOD_ENTRADA_E_SAIDA, Constantes.RAM, ponteiroBuffer, false);
+			
 			ram.recive(); //executa a escrita das inst. na ram
 			System.out.println("\nDados do buffer de E/S enviados para a RAM\n");
 			//Instrução(ões) salvas na ram
@@ -72,14 +80,23 @@ public class Main {
 			while(aux != 0 ) {
 
 				//interceptor																												
-				barramento.send(Constantes.MOD_ENTRADA_E_SAIDA, Constantes.CPU, new Dado(Constantes.KEY_INTERCEPTOR, new byte[tamInstrucao], ponteiroBuffer, false));
+				//barramento.send(Constantes.MOD_ENTRADA_E_SAIDA, Constantes.CPU, new Dado(Constantes.KEY_INTERCEPTOR, new byte[tamInstrucao], ponteiroBuffer, false));
+				controlBus.send(Constantes.MOD_ENTRADA_E_SAIDA, Constantes.CPU, Constantes.KEY_INTERCEPTOR);
+				dataBus.send(Constantes.MOD_ENTRADA_E_SAIDA, Constantes.CPU, new byte[tamInstrucao]);
+				addressBus.send(Constantes.MOD_ENTRADA_E_SAIDA, Constantes.CPU, ponteiroBuffer, false);
+				
 				cpu.recive(); //aqui dentro a cpu manda pedindo os dados da ram
 
 				byte[] res = ram.recive(); //se for leitura retorna dados lidos;
 				System.out.println("\nInstruções em byte indo para a cpu: ");
 				Helper.printArrayByte(res);
 
-				barramento.send(Constantes.RAM, Constantes.CPU, new Dado(Constantes.RESPOSTA, res, null)); //ram retorna os dados que a cpu pediu
+				//barramento.send(Constantes.RAM, Constantes.CPU, new Dado(Constantes.RESPOSTA, res, null)); //ram retorna os dados que a cpu pediu
+				
+				controlBus.send(Constantes.RAM, Constantes.CPU, Constantes.RESPOSTA);
+				dataBus.send(Constantes.RAM, Constantes.CPU, res);
+				addressBus.send(Constantes.RAM, Constantes.CPU, null, true);
+				
 				Main.cpu.recive(); //executa a instrucao
 
 
@@ -100,7 +117,12 @@ public class Main {
 		Scanner s = new Scanner(System.in);
 
 		System.out.println("Informe o tamanho do barramento: ");
-		barramento = new Barramento(s.nextInt());
+		dataBus = new DataBus(s.nextInt());
+		addressBus = new AddressBus();
+		controlBus = new ControlBus();
+		
+		
+		//barramento = new Barramento(s.nextInt());
 
 		System.out.println("Informe o tamanho da CPU: ");
 		cpu = new CPU(s.nextInt());
@@ -111,11 +133,23 @@ public class Main {
 		System.out.println("Informe o tamanho do Buffer de entrada e saída: ");*/
 		entradaESaida = new EntradaESaida();
 
-		cpu.setBarramento(barramento);
-		ram.setBarramento(barramento);
-		entradaESaida.setBarramento(barramento);
+		//cpu.setBarramento(barramento);
+		cpu.setAddressBus(addressBus);
+		cpu.setControlBus(controlBus);
+		cpu.setDataBus(dataBus);
+		
+		//ram.setBarramento(barramento);
+		ram.setAddressBus(addressBus);
+		ram.setControlBus(controlBus);
+		ram.setDataBus(dataBus);
+		
+		//entradaESaida.setBarramento(barramento);
+		entradaESaida.setAddressBus(addressBus);
+		entradaESaida.setControlBus(controlBus);
+		entradaESaida.setDataBus(dataBus);
+		
 
-		if(Validate.validarEmu(cpu, ram, entradaESaida, barramento)) {
+		if(Validate.validarEmu(cpu, ram, entradaESaida, addressBus, controlBus, dataBus)) {
 			s.close();
 			return;
 		}else {

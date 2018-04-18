@@ -1,7 +1,9 @@
 package utils;
 
-import hardware.Barramento;
+import hardware.AddressBus;
 import hardware.CPU;
+import hardware.ControlBus;
+import hardware.DataBus;
 import hardware.EntradaESaida;
 import hardware.Ram;
 
@@ -106,9 +108,9 @@ public class Validate {
 		return true;
 	}
 	
-	public static boolean validarEmu(CPU cpu, Ram ram, EntradaESaida es, Barramento barramento) {
+	public static boolean validarEmu(CPU cpu, Ram ram, EntradaESaida es, AddressBus ab, ControlBus cb, DataBus db) {
 		
-		if(Math.pow(2, barramento.getTamanho()) < ram.getCelulas().length) {
+		if(Math.pow(2, db.getLargura()) < ram.getCelulas().length) {
 			System.out.println("Barramento pequeno demais para a quantidade de ram");
 			return false;
 		}
