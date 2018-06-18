@@ -22,12 +22,14 @@ public class Main {
 	static public Ram ram;
 	static public CPU cpu;
 	static public EntradaESaida entradaESaida;
+	static public int larguraBanda;
 	//static public Barramento barramento;
 	static public int tamInstrucao;
 	static public String ponteiroBuffer; //de onde sera lida a proxima instrucao na ram
 	static public ControlBus controlBus;
 	static public DataBus dataBus;
 	static public AddressBus addressBus;
+	static public boolean pausado;
 
 	public static void main(String[] args) {
 
@@ -46,14 +48,14 @@ public class Main {
 			Helper.clearBuffer();
 			
 			for(int i = 0; l < linhas.size(); i++ ) { //ler todas as linhas, porem de duas em duas
-				if(i==2)
+				if(i==5)
 					break;
 				linha = linhas.get(l);
 
 				ArrayList<String> tokens =  Parser.parse(linha); //le a linha, faz as validacoes e retorna as tokens
-				System.out.println("comecando o encode");
+				
 				instrucoesEmByte = Encoder.encode(tokens); //transforma as tokens da linha em byte[]
-				System.out.println("encode finalizado");		
+				
 				if(entradaESaida.addToBuffer(instrucoesEmByte)) { //tokens em byte sao adicionadas ao buffer (se tiver espaco)
 					System.out.println("\nInstrução \"" + linha + "\"(em bytes) adicionada ao buffer de E/S\n");
 					aux++;
@@ -62,7 +64,7 @@ public class Main {
 					break;
 			}
 			
-			//Buffer com 1 ou 2 instrucoes
+			//Buffer com 5 ou menos instrucoes
 
 			//barramento.send(Constantes.MOD_ENTRADA_E_SAIDA, Constantes.RAM, new Dado(Constantes.KEY_ESCREVER, entradaESaida.getBuffer(), ponteiroBuffer, false));
 			controlBus.send(Constantes.MOD_ENTRADA_E_SAIDA, Constantes.RAM, Constantes.KEY_ESCREVER);
@@ -73,7 +75,7 @@ public class Main {
 			System.out.println("\nDados do buffer de E/S enviados para a RAM\n");
 			//Instrução(ões) salvas na ram
 			
-			if(l == 2 || l == 1) {	
+			if(l <= 5) {	
 				Logger.printFeedBack();
 			}
 
@@ -117,46 +119,50 @@ public class Main {
 		Scanner s = new Scanner(System.in);
 
 		System.out.println("Informe o tamanho do barramento: ");
-		dataBus = new DataBus(s.nextInt());
-		addressBus = new AddressBus();
-		controlBus = new ControlBus();
+		int tam = s.nextInt();
+		dataBus = new DataBus(tam);
+		addressBus = new AddressBus(tam);
+		controlBus = new ControlBus(tam);
 		
-		
-		//barramento = new Barramento(s.nextInt());
 
 		System.out.println("Informe o tamanho da CPU: ");
 		cpu = new CPU(s.nextInt());
+		
+		System.out.println("Informe a frquência (Hz): ");
+		larguraBanda = tam * s.nextInt();
 
-		System.out.println("Informe o tamanho da RAM: ");
-		ram = new Ram(s.nextInt());
-/*
-		System.out.println("Informe o tamanho do Buffer de entrada e saída: ");*/
+		System.out.println("\nTamanho da ram definido pelo sistema: 256 bytes\n");
+		ram = new Ram();
+		
+		System.out.println("\nTamanho do Buffer de entrada e saída definido pelo sistema: 5 instruções\n");
 		entradaESaida = new EntradaESaida();
+		
+		System.out.println("\nLargura de banda: " + larguraBanda +" bytes/seg\n");
+		
+		System.out.println("\nDeseja realizar a execução pausadamente ? (true or false)");
+		pausado = s.nextBoolean();
 
-		//cpu.setBarramento(barramento);
 		cpu.setAddressBus(addressBus);
 		cpu.setControlBus(controlBus);
 		cpu.setDataBus(dataBus);
 		
-		//ram.setBarramento(barramento);
 		ram.setAddressBus(addressBus);
 		ram.setControlBus(controlBus);
 		ram.setDataBus(dataBus);
 		
-		//entradaESaida.setBarramento(barramento);
 		entradaESaida.setAddressBus(addressBus);
 		entradaESaida.setControlBus(controlBus);
 		entradaESaida.setDataBus(dataBus);
 		
 
 		if(Validate.validarEmu(cpu, ram, entradaESaida, addressBus, controlBus, dataBus)) {
-			s.close();
+			
 			return;
 		}else {
 			startEmu();
 		}
 		
-		s.close();
+		
 
 
 	}
@@ -165,19 +171,46 @@ public class Main {
 		
 			switch(Main.cpu.getTam()) {
 			case 16:
-				if(ponteiroBuffer.equalsIgnoreCase("0x0000")) {
-					ponteiroBuffer = "0x0008"; //
+				if(ponteiroBuffer.equalsIgnoreCase("0x0000")){
+					ponteiroBuffer = "0x0008";
 					return;
-				}else {
+				}
+				if(ponteiroBuffer.equalsIgnoreCase("0x0008")) {
+					ponteiroBuffer = "0x0010";
+					return;
+				}
+				if (ponteiroBuffer.equalsIgnoreCase("0x0010")) {
+					ponteiroBuffer = "0x0018";
+					return;
+				}
+				if(ponteiroBuffer.equalsIgnoreCase("0x0018")) {
+					ponteiroBuffer = "0x0020";
+					return;
+				}
+				if(ponteiroBuffer.equalsIgnoreCase("0x0020")) {
 					ponteiroBuffer = "0x0000";
 					return;
 				}
+				
 
 			case 32:
 				if(ponteiroBuffer.equalsIgnoreCase("0x00000000")) {
 					ponteiroBuffer = "0x00000010"; //16 em hexa
 					return;
-				}else {
+				}
+				if(ponteiroBuffer.equalsIgnoreCase("0x00000010")){
+					ponteiroBuffer = "0x00000020";
+					return;
+				}
+				if(ponteiroBuffer.equalsIgnoreCase("0x00000020")){
+					ponteiroBuffer = "0x00000030";
+					return;
+				}
+				if(ponteiroBuffer.equalsIgnoreCase("0x00000030")){
+					ponteiroBuffer = "0x00000040";
+					return;
+				}
+				if(ponteiroBuffer.equalsIgnoreCase("0x00000040")){
 					ponteiroBuffer = "0x00000000";
 					return;
 				}
@@ -185,7 +218,20 @@ public class Main {
 				if(ponteiroBuffer.equalsIgnoreCase("0x0000000000000000")) {
 					ponteiroBuffer = "0x0000000000000020";
 					return;
-				}else {
+				}
+				if(ponteiroBuffer.equalsIgnoreCase("0x0000000000000020")){
+					ponteiroBuffer = "0x0000000000000040";
+					return;
+				}
+				if(ponteiroBuffer.equalsIgnoreCase("0x0000000000000040")){
+					ponteiroBuffer = "0x0000000000000060";
+					return;
+				}
+				if(ponteiroBuffer.equalsIgnoreCase("0x0000000000000060")){
+					ponteiroBuffer = "0x0000000000000080";
+					return;
+				}
+				if(ponteiroBuffer.equalsIgnoreCase("0x0000000000000080")){
 					ponteiroBuffer = "0x0000000000000000";
 					return;
 				}

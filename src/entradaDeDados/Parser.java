@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import utils.Constantes;
 import utils.Logger;
 import utils.Validate;
 
@@ -22,11 +23,15 @@ public static ArrayList<String> parse(String entrada) {
 	String regex1 = "(ADD)\\s+(\\w+),\\s+(\\w+)";
 	String regex2 = "(INC)\\s+(\\w+)";
 	String regex3 = "(IMUL)\\s+(\\w+),\\s+(\\w+),\\s+(\\w+)";
+	String regex4 = "(LABEL)\\s+(\\w+)";
+	String regex5 =  "(\\w)\\s+(<)\\s+(\\w+):JMP1:NULL";
 
 	regexs.add(regex0);
 	regexs.add(regex1);
 	regexs.add(regex2);
 	regexs.add(regex3);
+	regexs.add(regex4);
+	regexs.add(regex5);
 
 
 	for(String s : regexs) {
@@ -63,7 +68,7 @@ public static ArrayList<String> parse(String entrada) {
 				}
 				
 				
-				Logger.printError(Parser.class.getName(), "Erro ao realizar o Parser de alguma instrucao");
+				Logger.printError(Parser.class.getName(), "Erro 0 ao realizar o Parser de alguma instrucao");
 				
 			case "ADD":
 				if(Validate.validateAdd(m.group(1), m.group(2), m.group(3))) {
@@ -75,7 +80,7 @@ public static ArrayList<String> parse(String entrada) {
 					return tokens;
 				}
 				
-				Logger.printError(Parser.class.getName(), "Erro ao realizar o Parser de alguma instrucao");
+				Logger.printError(Parser.class.getName(), "Erro 1 ao realizar o Parser de alguma instrucao");
 				
 			case "INC":
 
@@ -87,7 +92,7 @@ public static ArrayList<String> parse(String entrada) {
 				    return tokens;
 				}
 					
-				Logger.printError(Parser.class.getName(), "Erro ao realizar o Parser de alguma instrucao");
+				Logger.printError(Parser.class.getName(), "Erro 2 ao realizar o Parser de alguma instrucao");
 
 			
 			case "IMUL":
@@ -101,9 +106,18 @@ public static ArrayList<String> parse(String entrada) {
 					
 					return tokens;
 				}
-			default:
 				
-				Logger.printError(Parser.class.getName(), "Erro ao realizar o Parser de alguma instrucao");
+			case "LABEL":
+				tokens.add(m.group(1));
+				tokens.add(m.group(2));
+				
+			default:
+				tokens.add(m.group(1));
+				tokens.add(m.group(2));
+				tokens.add(m.group(3));
+				
+				return tokens;
+
 			}
 
 		} else {

@@ -12,14 +12,8 @@ public class Ram {
 	private DataBus dataBus;
 	private AddressBus addressBus;
 
-	public Ram(int size) {
-		if(size == 32 || size == 64 || size == 128 )
-			this.ram = new byte[size];
-		else {
-			Logger.printError("Ram", "Tamanho de ram inválido");
-
-		}
-
+	public Ram() {
+		this.ram = new byte[256];
 	}
 
 	
@@ -62,7 +56,7 @@ public class Ram {
 			Logger.printError(getClass().getName(), "Endereco informádo inválido");
 
 		if(offset) {
-			endereco = Helper.formatarEndereco(enderecoStr) + Main.tamInstrucao*2; //transforma end. fisico em end. logico
+			endereco = Helper.formatarEndereco(enderecoStr) + Main.tamInstrucao*5; //transforma end. fisico em end. logico
 		}else {
 			endereco = Helper.formatarEndereco(enderecoStr);
 		}

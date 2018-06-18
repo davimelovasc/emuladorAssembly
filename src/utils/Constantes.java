@@ -17,8 +17,13 @@ public class Constantes {
 	public static final int ADD_INT = 51;
 	public static final int INC_INT = 52;
 	public static final int IMUL_INT = 53;
+	public static final int LABEL_INT = 54;
 	
 	
+	public static final int IGUAL_INT = 80;
+	public static final int MENOR_INT = 81;
+	public static final int MAIOR_INT = 82;
+
 	
 	
 	public static final String KEY_LER = "ler"; 
@@ -44,6 +49,8 @@ public class Constantes {
 			return "inc";
 		case IMUL_INT:
 			return "imul";
+		case LABEL_INT:
+			return "label";
 		case REGISTRADOR_A_INT:
 			return "A";
 		case REGISTRADOR_B_INT:
@@ -96,6 +103,14 @@ public class Constantes {
 			return INC_INT;
 		case "IMUL":
 			return IMUL_INT;
+		case "LABEL":
+			return LABEL_INT;
+		case "<":
+			return MENOR_INT;
+		case ">":
+			return MAIOR_INT;
+		case "=":
+			return IGUAL_INT;
 
 		default:
 			return Integer.parseInt(s);

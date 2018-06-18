@@ -12,11 +12,13 @@ public class AddressBus {
 	private List<String> listRam;
 	private List<String> listEntradaESaida;
 	private List<String> listCPU;
+	private int tamanho;
 	
-	public AddressBus() {
+	public AddressBus(int tamanho) {
 		listRam = new ArrayList<String>();
 		listEntradaESaida = new ArrayList<String>();
 		listCPU = new ArrayList<String>();
+		this.tamanho = tamanho;
 	}
 	
 	
@@ -64,6 +66,16 @@ public boolean isOffset() {
 
 public void setOffset(boolean offset) {
 	this.offset = offset;
+}
+
+
+public int getTamanho() {
+	return tamanho;
+}
+
+
+public void setTamanho(int tamanho) {
+	this.tamanho = tamanho;
 }
 
 

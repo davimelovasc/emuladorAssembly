@@ -11,11 +11,13 @@ public class ControlBus {
 	private List<String> listRam;
 	private List<String> listEntradaESaida;
 	private List<String> listCPU;
+	private int tamanho;
 	
-	public ControlBus() {
+	public ControlBus(int tamanho) {
 		listRam = new ArrayList<String>();
 		listEntradaESaida = new ArrayList<String>();
 		listCPU = new ArrayList<String>();
+		this.tamanho = tamanho;
 	}
 
 
@@ -54,6 +56,16 @@ public class ControlBus {
 		String controle = listEntradaESaida.get(0);
 		listEntradaESaida.remove(controle);
 		return controle;
+	}
+
+
+	public int getTamanho() {
+		return tamanho;
+	}
+
+
+	public void setTamanho(int tamanho) {
+		this.tamanho = tamanho;
 	}
 
 }

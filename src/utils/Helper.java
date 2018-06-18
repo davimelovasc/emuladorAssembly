@@ -1,5 +1,7 @@
 package utils;
 
+import java.util.Scanner;
+
 import principal.Main;
 
 public class Helper {
@@ -30,23 +32,14 @@ public class Helper {
 		Main.entradaESaida.setBuffer(b);
 	}
 	
-	public static void removerInstrucaoRam() {
+	public static void removerInstrucaoRam(int pi) {
 		byte b[] = Main.ram.getCelulas();
 		
-		
-		if(b[Main.tamInstrucao/4 -1] != 0) {
-			for (int i = 0; i < Main.tamInstrucao; i++) {
-				b[i] = 0;
-			}
-		} else {
-			for (int i = Main.tamInstrucao; i < Main.tamInstrucao*2; i++) {
-				b[i] = 0;
-			}
+		for (int i = 0; i < Main.tamInstrucao; i++) {
+			b[pi+i] = 0;
 		}
 		
 		Main.ram.setRam(b);
-		
-		
 	}
 
 	/*public static String fromInt(int i) {
@@ -202,9 +195,17 @@ public class Helper {
 	}
 
 	public static void printArrayByte(byte[] b) {
+		Scanner s = new Scanner(System.in);
 		for (int i = 0; i < b.length; i++) {
 			System.out.println(b[i]);
 		}
+		
+		if(Main.pausado) {
+			System.out.println("Pressione enter para continuar");
+			s.nextLine();
+			
+		}
+		
 	}
 
 }

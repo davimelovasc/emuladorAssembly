@@ -110,7 +110,7 @@ public class Validate {
 	
 	public static boolean validarEmu(CPU cpu, Ram ram, EntradaESaida es, AddressBus ab, ControlBus cb, DataBus db) {
 		
-		if(Math.pow(2, db.getLargura()) < ram.getCelulas().length) {
+		if(Math.pow(2, db.getTamanho()) < ram.getCelulas().length) {
 			System.out.println("Barramento pequeno demais para a quantidade de ram");
 			return false;
 		}
